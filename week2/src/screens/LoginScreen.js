@@ -9,14 +9,14 @@ const LoginScreen = ({ navigation }) => {
   const [password, setPassword] = useState("");
 
   const handleLogin = () => {
-    navigation.navigate("Main"); // 로그인 성공 후 메인 화면으로 이동
+    navigation.navigate("TabScreen"); // 로그인 성공 후 메인 화면으로 이동
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
         <Image style={styles.image} source={imagePath} />
-        <Text style={styles.text}>가계ss부!</Text>
+        <Text style={styles.text}>가계부!</Text>
       </View>
       <TextInput
         style={styles.input}
