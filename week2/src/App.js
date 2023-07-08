@@ -3,6 +3,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import LoginScreen from "./screens/LoginScreen";
 import TabScreen from "./screens/TabScreen";
+import KaKaoLogin from "./screens/KakaoLogin";
 
 const Stack = createStackNavigator();
 
@@ -12,6 +13,7 @@ function App() {
       <Stack.Navigator initialRouteName="Login">
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="TabScreen" component={TabScreen} />
+        <Stack.Screen name="KakaoLogin" component={KaKaoLogin} />
       </Stack.Navigator>
     </NavigationContainer>
   );
