@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { Button, StyleSheet, TextInput, View, Text } from "react-native";
-import { Image } from "react-native";
+import { Button, StyleSheet, TextInput, View, Text, Image } from "react-native";
 
 let imagePath = require("../../assets/finance.png");
 
@@ -9,6 +8,10 @@ const LoginScreen = ({ navigation }) => {
   const [password, setPassword] = useState("");
 
   const handleLogin = () => {
+    navigation.navigate("KakaoLogin"); // 로그인 성공 후 메인 화면으로 이동
+  };
+
+  const handleLogin2 = () => {
     navigation.navigate("TabScreen"); // 로그인 성공 후 메인 화면으로 이동
   };
 
@@ -32,7 +35,10 @@ const LoginScreen = ({ navigation }) => {
         secureTextEntry // 텍스트가 가려짐
       />
       <View style={styles.buttonContainer}>
-        <Button title={"로그인"} onPress={handleLogin} />
+        <Button title={"로그인"} onPress={handleLogin2} />
+      </View>
+      <View style={styles.buttonContainer}>
+        <Button title={"카카오 로그인"} onPress={handleLogin} />
       </View>
     </View>
   );
