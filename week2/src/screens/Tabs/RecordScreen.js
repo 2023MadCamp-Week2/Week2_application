@@ -10,6 +10,7 @@ import { StatusBar } from "react-native";
 import Input from '../../RecordScreenComponents/input';
 import RecordItem from "../../RecordScreenComponents/RecordItem";
 import RecordItemList from '../../RecordScreenComponents/RecordItemList';
+import ModalContent from "../../RecordScreenComponents/ModalContent";
 
 const ButtonText = styled.Text`
   font-size: 20px;
@@ -110,28 +111,9 @@ function RecordScreen() {
             onRequestClose={toggleModal}
           >
             <SafeAreaView style={{ flex: 1 }}>
-              <HeaderContainer>
-                <TouchableOpacity onPress={toggleModal}>
-                  <ButtonContainer>
-                    <Icon4 name="arrowleft" size={20} color="black" />
-                    <ButtonText>{" 닫기"}</ButtonText>
-                  </ButtonContainer>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={handleAddItem}>
-                  <ButtonContainer>
-                    <Icon5 name="check" size={30} color="black" />
-                  </ButtonContainer>
-                </TouchableOpacity>
-              </HeaderContainer>
-              <View style={{ flex: 1, justifyContent: "flex-start", alignItems: "flex-start", paddingLeft: 20 }}>
-              <TextInput
-                placeholder="내용 입력"
-                value={textinput}
-                onChangeText={(text) => setInputText(text)}
-              />
-              </View>
-            </SafeAreaView>
-          </Modal>
+                <ModalContent onClose={toggleModal} onAddItem={handleAddItem} />
+                </SafeAreaView>
+        </Modal>
 
           <FlatList
             data={listItems}
