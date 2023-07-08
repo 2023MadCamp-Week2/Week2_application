@@ -6,6 +6,7 @@ import { useNavigation } from "@react-navigation/native";
 
 const REST_API_KEY = "a925e5151b3222a586b7773df9205d84";
 const REDIRECT_URI = "http://localhost:19006";
+const IPv4 = "143.248.195.37";
 
 const KaKaoLogin = () => {
   const navigation = useNavigation();
@@ -18,6 +19,29 @@ const KaKaoLogin = () => {
       requestToken(authorize_code);
       console.log(authorize_code);
       console.log("Authorize_code 완료");
+    }
+  };
+
+  const checkIfUserExistsInDB = async (id) => {
+    try {
+      const response = await axios({
+        method: "post",
+        url: `http://${IPv4}:3000/api/check-user`,
+        data: {
+          id: id,
+        },
+      });
+
+      if (response.data.exists) {
+        console.log("exist");
+        return true;
+      } else {
+        console.log("not exist");
+        return false;
+      }
+    } catch (error) {
+      console.log("error", error);
+      return false;
     }
   };
 
@@ -42,8 +66,17 @@ const KaKaoLogin = () => {
 
       // 토큰이 정상적으로 발급되었으며, 사용자 정보도 정상적으로 불러왔다면 다음 화면으로 이동합니다.
       if (userInfo) {
-        console.log(userInfo);
-        navigation.navigate("TabScreen", { userInfo: userInfo });
+        console.log(userInfo.id);
+        const userExists = await checkIfUserExistsInDB(userInfo.id);
+        if (userExists) {
+          // 유저가 이미 존재
+          console.log("이미 등록된 유저입니다.");
+          navigation.navigate("TabScreen", { userInfo: userInfo });
+        } else {
+          // 유저 존재 X
+          console.log("등록되지 않은 유저입니다.");
+          navigation.navigate("TabScreen", { userInfo: userInfo });
+        }
       }
     } catch (error) {
       console.log("error", error);
