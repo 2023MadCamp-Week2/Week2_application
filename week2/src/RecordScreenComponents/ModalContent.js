@@ -3,12 +3,12 @@ import { View, Text, TouchableOpacity, ScrollView, StyleSheet, SafeAreaView, Tex
 import Icon4 from "react-native-vector-icons/AntDesign";
 import Icon5 from "react-native-vector-icons/Feather";
 import RecordItemList from './RecordItemList';
-import DatePicker from 'react-native-datepicker';
+// import DatePicker from 'react-native-datepicker';
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 import colors from "../../assets/colors.js";
 import AssetModal from './AssetModal';
 import CategoryModal from './CategoryModal';
 import moment from 'moment';
-import DateTimePicker from '@react-native-community/datetimepicker';
 // import { ToastContainer, useToast } from 'react-native-toast-message';
 
 const ModalContent = ({ onClose, onAddItem }) => {
@@ -24,9 +24,24 @@ const ModalContent = ({ onClose, onAddItem }) => {
     const [content, setContent] = useState('');
     const [isIncomeActive, setIsIncomeActive] = useState(isPlus); // Set initial state to false
     const [isExpenseActive, setIsExpenseActive] = useState(!isPlus);
-    const [isPlus, setIsPlus] = useState(isPlus);
+    const [isPlus, setIsPlus] = useState(false);
     const [isAssetModalVisible, setIsAssetModalVisible] = useState(false);
     const [isCategoryModalVisible, setIsCategoryModalVisible] = useState(false);
+    const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
+    const [isItemContainerPressed, setIsItemContainerPressed] = useState(false);
+
+    const handleItemContainerPress = () => {
+      setIsItemContainerPressed(true);
+    };
+
+  const handleDateChange = (selectedDate) => {
+    const selectedTimestamp = moment(selectedDate).format('YYYY-MM-DD HH:mm');
+    setDate(selectedTimestamp);
+    setIsDatePickerVisible(false); // 날짜 선택이 완료되면 DatePickerModal을 숨깁니다.
+    setIsItemContainerPressed(false); // Close the modal after date selection
+  };
+
+    
 
     useEffect(() => {
       const interval = setInterval(() => {
@@ -37,11 +52,10 @@ const ModalContent = ({ onClose, onAddItem }) => {
     }, []); // Empty dependency array ensures the effect runs only once
     
   
-    const handleDateChange = (selectedDate) => {
-      const selectedTimestamp = moment(selectedDate).format('YYYY-MM-DD HH:mm'); // 선택한 시간을 로컬 시간으로 변환하기
-    
-      setDate(selectedTimestamp);
-    };
+    // const handleDateChange = (selectedDate) => {
+    //   const selectedTimestamp = moment(selectedDate).format('YYYY-MM-DD HH:mm'); // 선택한 시간을 로컬 시간으로 변환하기
+    //   setDate(selectedTimestamp);
+    // };
   
     const handleAssetChange = (text) => {
       setAsset(text);
@@ -79,12 +93,17 @@ const ModalContent = ({ onClose, onAddItem }) => {
         const formattedValue = trimmedValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
       
         // Add the currency symbol "원" at the end of the amount
-        const formattedAmount = formattedValue ? formattedValue + '원' : '';
+        // const formattedAmount = formattedValue ? formattedValue + '원' : '';
       
         // Update the amount state
-        setAmount(formattedAmount);
+        setAmount(formattedValue);
       };
       
+      const handleBackspacePress = () => {
+        // Remove the last character from the amount value
+        const updatedAmount = amount.slice(0, -1);
+        setAmount(updatedAmount);
+      };
   
     const handleContentChange = (text) => {
       setContent(text);
@@ -158,29 +177,12 @@ const ModalContent = ({ onClose, onAddItem }) => {
           {/* 각 아이템은 왼쪽에 제목, 오른쪽에 버튼으로 구성됨 */}
           <View style={styles.itemContainer}>
             <Text style={styles.itemTitle}>날짜</Text>
-                <DatePicker
-                style={styles.datePicker}
-                date={deviceTime}
-                mode="datetime"
-                placeholder="날짜를 선택하세요"
-                format="YYYY-MM-DD HH:mm"
-                confirmBtnText="확인"
-                cancelBtnText="취소"
-                customStyles={{
-                  dateIcon: {
-                    display: 'none',
-                  },
-                  dateInput: {
-                    borderWidth: 0,
-                    alignItems: 'flex-start',
-                  },
-                  dateText: {
-                    fontSize: 16,
-                  },
-                  useNativeDriver: false, // Add this line to disable native driver
-                }}
-                onDateChange={handleDateChange}
-            />
+            <TouchableOpacity
+              style={styles.datePicker}
+              onPress={() => setIsItemContainerPressed(true)}
+            >
+              <Text>{moment(date).format('YYYY-MM-DD HH:mm')}</Text>
+            </TouchableOpacity>
           </View>
           <View style={styles.itemContainer}>
             <Text style={styles.itemTitle}>자산</Text>
@@ -211,7 +213,13 @@ const ModalContent = ({ onClose, onAddItem }) => {
                 placeholder="금액을 입력하세요"
                 keyboardType="numeric" // Specify the keyboard type to numeric
                 // caretHidden //커서 안 보이게
+                onKeyPress={({ nativeEvent }) => {
+                  if (nativeEvent.key === 'Backspace') {
+                    handleBackspacePress();
+                  }
+                }}
                 />
+                <Text style={styles.currency}>원</Text>
           </View>
           <View style={styles.itemContainer}>
             <Text style={styles.itemTitle}>내용</Text>
@@ -232,6 +240,13 @@ const ModalContent = ({ onClose, onAddItem }) => {
             visible={isCategoryModalVisible}
             onClose={handleCloseCategoryModal}
             onSelectCategory={handleCategoryChange}
+        />
+        <DateTimePickerModal
+          style={styles.dateTimePickerModal}
+          isVisible={isItemContainerPressed}
+          mode="datetime"
+          onConfirm={handleDateChange}
+          onCancel={() => setIsItemContainerPressed(false)}
         />
         {/* <ToastContainer ref={(ref) => Toast.setRef(ref)} /> */}
       </SafeAreaView>
@@ -328,13 +343,22 @@ const styles = StyleSheet.create({
     fontSize: 16,
     alignItems: 'center',
   },
+  currency: {
+    flex: 1,
+    fontSize: 16,
+    alignItems: 'flex-start',
+  },
+  dateTimePickerModal:{
+    flex: 7,
+    alignItems: 'flex-start',
+    fontSize: 20,
+  },
   itemInput: {
     flex: 7,
     marginLeft: 10, // Add left margin for spacing
     paddingHorizontal: 10,
     fontSize: 16,
     alignItems: 'center',
-    
   },
   itemButton: {
     backgroundColor: 'lightblue',
@@ -361,9 +385,10 @@ const styles = StyleSheet.create({
   },
   datePicker: {
     flex: 7,
-    marginLeft: 10, // Add left margin for spacing
+    marginLeft: 20, // Add left margin for spacing
     fontSize: 20,
-    alignItems: 'center',
+    alignItems: 'flex-start',
+    marginVertical: 6,
   },
   ToastContainer: {
     backgroundColor: "gray",

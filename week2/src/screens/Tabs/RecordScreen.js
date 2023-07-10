@@ -10,7 +10,7 @@ import Input from '../../RecordScreenComponents/input';
 import RecordItem from "../../RecordScreenComponents/RecordItem";
 import RecordItemList from '../../RecordScreenComponents/RecordItemList';
 import ModalContent from "../../RecordScreenComponents/ModalContent";
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import colors from "../../../assets/colors";
 import SearchModal from '../../RecordScreenComponents/SearchModal';
@@ -118,9 +118,9 @@ function RecordScreen() {
                     </View>
                   </View>
                   <View style={styles.resultRow}>
-                    <View style={styles.resultIndividualBox}>
+                    <View style={styles.resultSumBox}>
                       <Text style={styles.resultText}>합산</Text>
-                        <Text style={totalSum === "" || totalSum.includes("-") ? styles.amountTextRed : styles.amountTextGreen}>
+                        <Text style={totalSum === "" || totalSum.includes("-") ? styles.amountTextRed : styles.amountTextGreen} numberOfLines={1}>
                           {totalSum}
                         </Text>
                     </View>
@@ -185,6 +185,13 @@ const styles = StyleSheet.create({
     margin: 10,
     alignItems: 'center',
     width: "40%"
+  },
+  resultSumBox: {
+    backgroundColor: 'white',
+    // padding: 10,
+    margin: 10,
+    alignItems: 'center',
+    width: "80%"
   },
   resultRow: {
     flexDirection: 'row',
