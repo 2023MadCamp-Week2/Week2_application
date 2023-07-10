@@ -15,6 +15,27 @@ import { createStackNavigator } from '@react-navigation/stack';
 import colors from "../../../assets/colors";
 import SearchModal from '../../RecordScreenComponents/SearchModal';
 
+const IPv4 = "143.248.195.207";
+
+const fetchData = async () => {
+  try {
+    const userId = getLoggedInUserId(); // Replace with your logic to retrieve the logged-in user's ID
+    const response = await fetch(`http://${IPv4}:3000/api/get-list`);
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch data from the server');
+    }
+
+    const data = await response.json();
+    const filteredData = data.records.filter(item => item.userId === userId); // Filter the data based on the user ID
+    setListItems(filteredData);
+    console.log('Fetched records:', filteredData);
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  }
+};
+
+
 const Stack = createStackNavigator();
 
 function RecordScreen() {
@@ -91,7 +112,7 @@ function RecordScreen() {
       isPlus={item.isPlus}
     />
   );
-  console.log(listItems); 
+  // console.log(listItems); 
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
