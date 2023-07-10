@@ -1,18 +1,48 @@
 import React, { useState } from "react";
-import { Button, StyleSheet, TextInput, View, Text, Image } from "react-native";
+import axios from "axios";
+import {
+  Image,
+  StyleSheet,
+  TextInput,
+  View,
+  Text,
+  TouchableOpacity,
+  Button,
+} from "react-native";
 
 let imagePath = require("../../assets/finance.png");
+let buttonImagePath = require("../../assets/kakao_login.png"); // 로그인 버튼 이미지 경로
+const IPv4 = "143.248.195.207";
 
 const LoginScreen = ({ navigation }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = () => {
-    navigation.navigate("KakaoLogin"); // 로그인 성공 후 메인 화면으로 이동
+  const handleLogin2 = async () => {
+    try {
+      const response = await axios({
+        method: "post",
+        url: `http://${IPv4}:3000/api/login`, // 로그인 요청을 보낼 서버의 URL을 넣으세요.
+        data: {
+          userid: username,
+          pw: password,
+        },
+      });
+
+      const userInfo = response.data; // 서버에서 응답으로 보낸 사용자 정보를 가져옵니다.
+
+      // 로그인이 성공하면 메인 화면으로 이동하고 사용자 정보를 전달합니다.
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "TabScreen", params: { userInfo: userInfo } }],
+      });
+    } catch (error) {
+      console.log("error", error);
+    }
   };
 
-  const handleLogin2 = () => {
-    navigation.navigate("TabScreen"); // 로그인 성공 후 메인 화면으로 이동
+  const handleLogin = () => {
+    navigation.navigate("KakaoLogin"); // 카카오 로그인 페이지로 이동
   };
 
   return (
@@ -38,7 +68,9 @@ const LoginScreen = ({ navigation }) => {
         <Button title={"로그인"} onPress={handleLogin2} />
       </View>
       <View style={styles.buttonContainer}>
-        <Button title={"카카오 로그인"} onPress={handleLogin} />
+        <TouchableOpacity onPress={handleLogin}>
+          <Image source={buttonImagePath} style={styles.buttonImage} />
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -67,6 +99,11 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     marginTop: 30,
+    alignItems: "center",
+  },
+  buttonImage: {
+    width: 300, // 버튼 이미지 크기 조절 필요
+    height: 45,
   },
   text: {
     marginTop: 10,

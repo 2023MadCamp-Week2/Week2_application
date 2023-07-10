@@ -5,19 +5,24 @@ const app = express();
 app.use(express.json()); // JSON 파싱 미들웨어 사용 설정
 
 app.post("/api/user", async (req, res) => {
-  const { id, nickname, email, profileurl } = req.body; // 클라이언트에서 보낸 데이터를 추출
+  const { id, nickname, email, profileurl, userid, pw } = req.body; // 클라이언트에서 보낸 데이터를 추출
 
   try {
     const [result] = await db
       .promise()
       .query(
-        "INSERT INTO users (id, nickname, email, profileurl) VALUES (?, ?, ?, ?)",
-        [id, nickname, email, profileurl]
+        "INSERT INTO users (id, nickname, email, profileurl, userid, pw) VALUES (?, ?, ?, ?, ?, ?)",
+        [id, nickname, email, profileurl, userid, pw]
       );
     res.status(201).json({ message: "New user added!" }); // 새 사용자가 추가되었음을 응답
   } catch (err) {
     res.status(500).json({ message: err.message }); // 에러가 발생한 경우 에러 메시지를 응답
   }
+});
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send("Something broke!");
 });
 
 app.post("/api/check-user", async (req, res) => {
@@ -49,4 +54,41 @@ app.get("/api/user", async (req, res) => {
 
 app.listen(3000, () => {
   console.log("Server is running on port 3000");
+});
+
+app.post("/api/login", async (req, res) => {
+  const { userid, pw } = req.body; // 클라이언트에서 보낸 사용자 이름과 비밀번호를 추출합니다.
+  try {
+    const [rows] = await db
+      .promise()
+      .query("SELECT * FROM users WHERE userid = ? AND pw = ?", [userid, pw]); // DB에서 사용자를 찾습니다.
+
+    if (rows.length > 0) {
+      // 사용자가 발견되면 사용자 정보를 반환합니다.
+      res.json(rows[0]);
+    } else {
+      // 사용자를 찾지 못했을 경우, 오류 메시지를 반환합니다.
+      res.status(404).json({ message: "User not found." });
+    }
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+app.post("/api/get-nickname", async (req, res) => {
+  const { id } = req.body;
+  try {
+    const [rows] = await db
+      .promise()
+      .query("SELECT nickname FROM users WHERE id = ?", [id]);
+    if (rows.length > 0) {
+      // 해당 ID를 가진 사용자가 DB에 존재하면, 닉네임을 반환
+      res.json({ nickname: rows[0].nickname });
+    } else {
+      // 해당 ID를 가진 사용자가 DB에 존재하지 않으면, 적절한 메시지와 함께 응답
+      res.json({ message: "No user with this ID found." });
+    }
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });

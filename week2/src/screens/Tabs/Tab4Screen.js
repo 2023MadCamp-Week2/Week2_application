@@ -2,20 +2,13 @@ import React from "react";
 import { Text, View, Image, StyleSheet } from "react-native";
 
 function Tab4Screen({ userInfo }) {
-  let gender = "none";
-
-  if (userInfo.kakao_account.gender == "male") gender = "남자";
-  else gender = "여자";
-
+  console.log(userInfo);
   return (
     <View style={styles.container}>
-      <Image
-        source={{ uri: userInfo.properties.profile_image }}
-        style={styles.image}
-      />
+      <Image source={{ uri: userInfo.profileurl }} style={styles.image} />
       <Text style={styles.text}>ID: {userInfo.id}</Text>
-      <Text style={styles.text}>이메일: {userInfo.kakao_account.email}</Text>
-      <Text style={styles.text}>성별: {gender}</Text>
+      <Text style={styles.text}>닉네임: {userInfo.nickname}</Text>
+      <Text style={styles.text}>이메일: {userInfo.email}</Text>
     </View>
   );
 }

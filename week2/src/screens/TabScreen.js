@@ -10,7 +10,7 @@ const Tab = createBottomTabNavigator();
 
 function BottomTabNavigationApp({ route }) {
   const { userInfo } = route.params;
-
+  console.log(userInfo);
   return (
     <Tab.Navigator initialRouteName="Home">
       <Tab.Screen

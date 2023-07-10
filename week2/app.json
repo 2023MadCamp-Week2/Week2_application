@@ -20,9 +20,6 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      },
-      "config": {
-        "package": "com.madcampweek2"
       }
     },
     "web": {

@@ -3,14 +3,14 @@ import { View, StyleSheet } from "react-native";
 import { WebView } from "react-native-webview";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
+import Toast from "react-native-toast-message";
 
 const REST_API_KEY = "a925e5151b3222a586b7773df9205d84";
 const REDIRECT_URI = "http://localhost:19006";
-const IPv4 = "143.248.195.37";
+const IPv4 = "143.248.195.207";
 
 const KaKaoLogin = () => {
   const navigation = useNavigation();
-
   const KakaoLoginWebView = (data) => {
     const exp = "code=";
     var condition = data.indexOf(exp);
@@ -19,6 +19,22 @@ const KaKaoLogin = () => {
       requestToken(authorize_code);
       console.log(authorize_code);
       console.log("Authorize_code 완료");
+    }
+  };
+
+  const getUserNicknameFromDB = async (id) => {
+    try {
+      const response = await axios({
+        method: "post",
+        url: `http://${IPv4}:3000/api/get-nickname`,
+        data: {
+          id: id,
+        },
+      });
+
+      return response.data.nickname;
+    } catch (error) {
+      console.log("error", error);
     }
   };
 
@@ -66,16 +82,24 @@ const KaKaoLogin = () => {
 
       // 토큰이 정상적으로 발급되었으며, 사용자 정보도 정상적으로 불러왔다면 다음 화면으로 이동합니다.
       if (userInfo) {
-        console.log(userInfo.id);
         const userExists = await checkIfUserExistsInDB(userInfo.id);
         if (userExists) {
           // 유저가 이미 존재
           console.log("이미 등록된 유저입니다.");
-          navigation.navigate("TabScreen", { userInfo: userInfo });
+          const nickname = await getUserNicknameFromDB(userInfo.id);
+          Toast.show({
+            type: "success",
+            text1: "입장",
+            text2: `${nickname}님, 안녕하세요!`,
+          });
+          navigation.reset({
+            index: 0,
+            routes: [{ name: "TabScreen", params: { userInfo: userInfo } }],
+          });
         } else {
           // 유저 존재 X
           console.log("등록되지 않은 유저입니다.");
-          navigation.navigate("TabScreen", { userInfo: userInfo });
+          navigation.navigate("Signup", { userInfo: userInfo });
         }
       }
     } catch (error) {
