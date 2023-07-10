@@ -7,10 +7,37 @@ function ListScreen() {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    fetch(`http://${IPv4}:3000/api/user`)
-      .then((response) => response.json())
-      .then((data) => setUsers(data));
+    fetchUsers();
   }, []);
+
+  const fetchUsers = async () => {
+    try {
+      const response = await fetch(`http://${IPv4}:3000/api/user`);
+      const users = await response.json();
+
+      const promises = users.map(async (user) => {
+        const expenseResponse = await fetch(
+          `http://${IPv4}:3000/api/get_expense?id=${user.id}`
+        );
+        const expenseData = await expenseResponse.json();
+
+        const totalExpense = expenseData.totalExpense || 0;
+
+        return {
+          ...user,
+          expense: totalExpense,
+        };
+      });
+
+      let usersWithExpense = await Promise.all(promises);
+
+      usersWithExpense = usersWithExpense.sort((a, b) => b.expense - a.expense);
+
+      setUsers(usersWithExpense);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
 
   if (!users.length) {
     return <Text>Loading...</Text>;
@@ -25,9 +52,8 @@ function ListScreen() {
           <View style={styles.viewstyle}>
             <Image source={{ uri: item.profileurl }} style={styles.image} />
             <View style={styles.left}>
-              <Text style={styles.text}>ID: {item.id}</Text>
               <Text style={styles.text}>Nickname: {item.nickname}</Text>
-              <Text style={styles.text}>Email: {item.email}</Text>
+              <Text style={styles.text}>Expense: {item.expense}</Text>
             </View>
           </View>
         )}
@@ -47,20 +73,20 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   separator: {
-    height: 1, // 구분선의 높이를 정의합니다.
-    width: "100%", // 구분선의 너비를 정의합니다.
-    color: "#000", // 구분선의 색상을 정의합니다.
+    height: 1,
+    width: "100%",
+    color: "#000",
   },
   viewstyle: {
-    flexDirection: "row", // 수평 방향으로 배치합니다.
+    flexDirection: "row",
     margin: 10,
-    alignItems: "center", // 아이템들을 가운데 정렬합니다.
+    alignItems: "center",
   },
   image: {
     width: 100,
     height: 100,
     borderRadius: 50,
-    marginRight: 10, // 이미지와 텍스트 사이에 간격을 추가합니다.
+    marginRight: 10,
   },
   left: {
     marginLeft: 40,

@@ -123,3 +123,25 @@ app.get("/api/get_money", async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+
+app.get("/api/get_expense", async (req, res) => {
+  const userId = req.query.id;
+
+  try {
+    // 이번 달의 시작과 끝 날짜를 얻습니다.
+    const now = new Date();
+    const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const lastDayOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+    const [rows] = await db
+      .promise()
+      .query(
+        "SELECT SUM(amount) as totalExpense FROM ledger WHERE id = ? AND type = 'expense' AND date BETWEEN ? AND ?",
+        [userId, firstDayOfMonth, lastDayOfMonth]
+      );
+    const totalExpense = rows[0].totalExpense || 0; // totalExpense가 NULL일 경우 0으로 처리
+    res.json({ totalExpense });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
