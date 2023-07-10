@@ -1,30 +1,47 @@
-import React, { useState, useEffect } from "react";
-import { Text, TouchableOpacity, View, Modal, SafeAreaView, FlatList, TextInput, StyleSheet, ScrollView } from "react-native";
+import React, { useState, useEffect, useCallback } from "react";
+import {
+  Text,
+  TouchableOpacity,
+  View,
+  Modal,
+  SafeAreaView,
+  FlatList,
+  TextInput,
+  StyleSheet,
+  ScrollView,
+  RefreshControl,
+} from "react-native";
 import Icon3 from "react-native-vector-icons/Entypo";
 import Icon4 from "react-native-vector-icons/AntDesign";
 import Icon5 from "react-native-vector-icons/Feather";
 import Icon6 from "react-native-vector-icons/FontAwesome";
 import { theme } from "../../theme";
 import { StatusBar } from "react-native";
-import Input from '../../RecordScreenComponents/input';
+import Input from "../../RecordScreenComponents/input";
 import RecordItem from "../../RecordScreenComponents/RecordItem";
-import RecordItemList from '../../RecordScreenComponents/RecordItemList';
+import RecordItemList from "../../RecordScreenComponents/RecordItemList";
 import ModalContent from "../../RecordScreenComponents/ModalContent";
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
 import colors from "../../../assets/colors";
-import SearchModal from '../../RecordScreenComponents/SearchModal';
-
+import SearchModal from "../../RecordScreenComponents/SearchModal";
+const IPv4 = "143.248.195.207";
 const Stack = createStackNavigator();
 
-function RecordScreen() {
+function RecordScreen({ route, navigation, userInfo }) {
+  React.useEffect(() => {
+    console.log(userInfo.id);
+  }, []);
+
+  var Myid = userInfo.id;
   const [isModalVisible, setModalVisible] = useState(false);
   const [listItems, setListItems] = useState([]);
-  const [textinput, setInputText] = useState('');
+  const [textinput, setInputText] = useState("");
   const [isSearchModalVisible, setSearchModalVisible] = useState(false);
   const [totalIncome, setTotalIncome] = useState(0);
   const [totalExpense, setTotalExpense] = useState(0);
   const [totalSum, setTotalSum] = useState("");
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     // Calculate the total sum of income and expenses
@@ -32,7 +49,7 @@ function RecordScreen() {
     let expenseSum = 0;
     let totalSum = 0;
     listItems.forEach((item) => {
-      const amount = parseFloat(item.amount.replace(/,/g, ''));
+      const amount = parseFloat(item.amount.replace(/,/g, ""));
       if (item.isPlus) {
         incomeSum += amount;
         totalSum += amount;
@@ -46,40 +63,46 @@ function RecordScreen() {
     const formattedTotalSum = totalSum.toLocaleString();
 
     // Update the state variables
-    setTotalIncome(formattedIncomeSum+"원");
-    setTotalExpense(formattedExpenseSum+"원");
-    setTotalSum(formattedTotalSum+"원");
+    setTotalIncome(formattedIncomeSum + "원");
+    setTotalExpense(formattedExpenseSum + "원");
+    setTotalSum(formattedTotalSum + "원");
   }, [listItems]);
+
+  useEffect(() => {
+    fetchDataForUser();
+  }, [fetchDataForUser]);
 
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
   };
 
-  const handleAddItem = (newItem) => {
-    setListItems((prevItems) => [newItem, ...prevItems]);
-  };
-  
   const toggleSearchModal = () => {
     setSearchModalVisible(!isSearchModalVisible);
   };
-  
-  
 
-//   const handleAddItem = () => {
-//     if (textinput.trim() === '') {
-//       console.log(textinput)
-//       return; // 입력된 내용이 없으면 아이템 추가하지 않음
-//     }
-//     const newItem = { id: Date.now().toString(), name: textinput };
-//     setListItems([...listItems, newItem]);
-//     setInputText(''); // 입력 필드 초기화
-//     console.log('qwwq')
-//     toggleModal();
-//   };
+  const fetchDataForUser = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      const response = await fetch(
+        `http://${IPv4}:3000/api/get_money?id=${Myid}`
+      );
+      const data2 = await response.json();
 
-  const logshow = () => {
-    console.log(RecordItemList[0])
-  };
+      const formattedData = data2.map((item) => {
+        return {
+          ...item,
+          amount: item.amount.toLocaleString() + "원",
+          isPlus: item.type !== "expense",
+        };
+      });
+
+      setListItems(formattedData);
+      console.log("Data fetched and set:", formattedData);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+    setRefreshing(false);
+  }, [Myid]);
 
   const renderItem = ({ item }) => (
     <RecordItem
@@ -91,130 +114,155 @@ function RecordScreen() {
       isPlus={item.isPlus}
     />
   );
-  console.log(listItems); 
+  console.log(listItems);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.header}>
-            <Text style={styles.title}>가계부</Text>
-            <TouchableOpacity style={styles.headerbutton} onPress={toggleSearchModal}>
-              <Icon6 name="search" size={25} color="black" />
-            </TouchableOpacity>
+        <Text style={styles.title}>가계부</Text>
+        <TouchableOpacity
+          style={styles.headerbutton}
+          onPress={toggleSearchModal}
+        >
+          <Icon6 name="search" size={25} color="black" />
+        </TouchableOpacity>
       </View>
-        <View style={styles.container}>
-            <FlatList
-              ListHeaderComponent={
-                <>
-                <View style={styles.resultBox}>
-                  <View style={styles.resultRow}>
-                    <View style={styles.resultIndividualBox}>
-                      <Text style={styles.resultText}>수입</Text>
-                      <Text style={[styles.amountTextGreen, { flexShrink: 1 }]} numberOfLines={1}>{totalIncome}</Text>
-                    </View>
-                    <View style={styles.verticalLine} />
-                    <View style={styles.resultIndividualBox}>
-                      <Text style={styles.resultText}>지출</Text>
-                      <Text style={[styles.amountTextRed, { flexShrink: 1 }]} numberOfLines={1}>{totalExpense}</Text>
-                    </View>
+      <View style={styles.container}>
+        <FlatList
+          ListHeaderComponent={
+            <>
+              <View style={styles.resultBox}>
+                <View style={styles.resultRow}>
+                  <View style={styles.resultIndividualBox}>
+                    <Text style={styles.resultText}>수입</Text>
+                    <Text
+                      style={[styles.amountTextGreen, { flexShrink: 1 }]}
+                      numberOfLines={1}
+                    >
+                      {totalIncome}
+                    </Text>
                   </View>
-                  <View style={styles.resultRow}>
-                    <View style={styles.resultIndividualBox}>
-                      <Text style={styles.resultText}>합산</Text>
-                        <Text style={totalSum === "" || totalSum.includes("-") ? styles.amountTextRed : styles.amountTextGreen}>
-                          {totalSum}
-                        </Text>
-                    </View>
+                  <View style={styles.verticalLine} />
+                  <View style={styles.resultIndividualBox}>
+                    <Text style={styles.resultText}>지출</Text>
+                    <Text
+                      style={[styles.amountTextRed, { flexShrink: 1 }]}
+                      numberOfLines={1}
+                    >
+                      {totalExpense}
+                    </Text>
                   </View>
                 </View>
-                  <Text style={styles.sectionTitle}>내역</Text>
-                  <View style={styles.separator} />
-                </>
-              }
-              data={listItems}
-              renderItem={renderItem}
-              keyExtractor={(item) => item.id}
+                <View style={styles.resultRow}>
+                  <View style={styles.resultIndividualBox}>
+                    <Text style={styles.resultText}>합산</Text>
+                    <Text
+                      style={
+                        totalSum === "" || totalSum.includes("-")
+                          ? styles.amountTextRed
+                          : styles.amountTextGreen
+                      }
+                    >
+                      {totalSum}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+              <Text style={styles.sectionTitle}>내역</Text>
+              <View style={styles.separator} />
+            </>
+          }
+          data={listItems}
+          renderItem={renderItem}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={fetchDataForUser}
             />
+          }
+        />
 
-          <TouchableOpacity
-            style={styles.floatingButton}
-            onPress={toggleModal}
-          >
-            <Icon3 name="plus" size={25} color="white" />
-          </TouchableOpacity>
+        <TouchableOpacity style={styles.floatingButton} onPress={toggleModal}>
+          <Icon3 name="plus" size={25} color="white" />
+        </TouchableOpacity>
 
-          <Modal
-            visible={isModalVisible}
-            animationType="slide"
-            onRequestClose={toggleModal}
-          >
-            <SafeAreaView style={{ flex: 1 }}>
-              <ModalContent onClose={toggleModal} onAddItem={handleAddItem} />
-            </SafeAreaView>
-          </Modal>
-          <Modal
-            visible={isSearchModalVisible}
-            animationType="slide"
-            onRequestClose={toggleSearchModal}
-          >
-            <SafeAreaView style={{ flex: 1 }}>
-              <SearchModal onClose={toggleSearchModal} listItems={listItems} />
-            </SafeAreaView>
-          </Modal>
-        </View>
+        <Modal
+          visible={isModalVisible}
+          animationType="slide"
+          onRequestClose={toggleModal}
+        >
+          <SafeAreaView style={{ flex: 1 }}>
+            <ModalContent
+              onClose={toggleModal}
+              onAddItem={fetchDataForUser}
+              userInfo={userInfo}
+            />
+          </SafeAreaView>
+        </Modal>
+        <Modal
+          visible={isSearchModalVisible}
+          animationType="slide"
+          onRequestClose={toggleSearchModal}
+        >
+          <SafeAreaView style={{ flex: 1 }}>
+            <SearchModal onClose={toggleSearchModal} listItems={listItems} />
+          </SafeAreaView>
+        </Modal>
+      </View>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   resultBox: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 8,
     padding: 15,
     marginTop: 10,
     marginBottom: 30,
     marginHorizontal: 10, // Add margin horizontally
     elevation: 3, // for Android
-    shadowColor: 'black', // for iOS
+    shadowColor: "black", // for iOS
     shadowOffset: { width: 0, height: 2 }, // for iOS
     shadowOpacity: 0.2, // for iOS
     shadowRadius: 2, // for iOS
   },
   resultIndividualBox: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     // padding: 10,
     margin: 10,
-    alignItems: 'center',
-    width: "40%"
+    alignItems: "center",
+    width: "40%",
   },
   resultRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'flex-end', // Align vertically to the bottom of the text
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "flex-end", // Align vertically to the bottom of the text
     marginBottom: 5,
   },
   verticalLine: {
-    height: '100%',
+    height: "100%",
     width: 1,
-    backgroundColor: 'lightgray',
+    backgroundColor: "lightgray",
     marginHorizontal: 10,
   },
   resultText: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     fontSize: 18,
-    color: 'gray',
-    alignItems: 'center', // Align vertically to the bottom of the text
+    color: "gray",
+    alignItems: "center", // Align vertically to the bottom of the text
     flex: 1, // Added flex property to allow text to wrap
-    marginBottom:10,
+    marginBottom: 10,
   },
   container: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     paddingHorizontal: 20,
     paddingVertical: 20,
   },
   headerContainer: {
-    backgroundColor: 'skyblue',
-    shadowColor: 'black',
+    backgroundColor: "skyblue",
+    shadowColor: "black",
     shadowOffset: {
       width: 0,
       height: 2,
@@ -225,61 +273,61 @@ const styles = StyleSheet.create({
     paddingTop: StatusBar.currentHeight + 10,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     backgroundColor: "skyblue",
   },
   title: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     padding: 20,
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 10,
   },
   separator: {
-    width: '100%',
+    width: "100%",
     height: 1,
-    backgroundColor: 'lightgray',
+    backgroundColor: "lightgray",
     marginBottom: 10,
   },
   amountText: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     fontSize: 20,
-    color: 'gray',
-    alignItems: 'flex-end', // Align vertically to the bottom of the text
+    color: "gray",
+    alignItems: "flex-end", // Align vertically to the bottom of the text
     marginLeft: -100, // Left margin to create space for long content text
   },
   amountTextGreen: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     fontSize: 20,
-    color: 'gray',
-    alignItems: 'flex-end', // Align vertically to the bottom of the text
+    color: "gray",
+    alignItems: "flex-end", // Align vertically to the bottom of the text
     color: colors.plusGreen, // Color when isPlus is true
-    alignItems: 'center', // Add alignItems property for vertical alignment
+    alignItems: "center", // Add alignItems property for vertical alignment
   },
   amountTextRed: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     fontSize: 20,
-    color: 'gray',
-    alignItems: 'flex-end', // Align vertically to the bottom of the text
-    color: 'red', // Color when isPlus is false
-    alignItems: 'center', // Add alignItems property for vertical alignment
+    color: "gray",
+    alignItems: "flex-end", // Align vertically to the bottom of the text
+    color: "red", // Color when isPlus is false
+    alignItems: "center", // Add alignItems property for vertical alignment
   },
   floatingButton: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 30,
     right: 20,
-    backgroundColor: 'red',
+    backgroundColor: "red",
     borderRadius: 30,
     width: 60,
     height: 60,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: 'red',
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "red",
     shadowOffset: {
       width: 0,
       height: 2,
@@ -289,27 +337,27 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   headerbutton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-start",
     paddingHorizontal: 20,
   },
   headerbuttontext: {
-    color: 'black',
-    fontWeight: 'bold',
+    color: "black",
+    fontWeight: "bold",
     fontSize: 20,
   },
   modalContent: {
     flex: 1,
-    justifyContent: 'flex-start',
-    alignItems: 'flex-start',
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
     paddingLeft: 20,
   },
   textInput: {
-    width: '100%',
+    width: "100%",
     height: 40,
     borderBottomWidth: 1,
-    borderBottomColor: 'lightgray',
+    borderBottomColor: "lightgray",
     fontSize: 16,
   },
 });

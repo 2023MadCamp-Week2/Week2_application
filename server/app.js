@@ -92,3 +92,34 @@ app.post("/api/get-nickname", async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+
+app.post("/api/push_money", async (req, res) => {
+  const { id, user_id, date, type, amount, asset, category, description } =
+    req.body;
+
+  try {
+    const [result] = await db
+      .promise()
+      .query(
+        "INSERT INTO ledger (id, date, type, amount, asset, category, description) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        [id, date, type, amount, asset, category, description]
+      );
+
+    res.status(201).json({ message: "New record added!" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+app.get("/api/get_money", async (req, res) => {
+  const userId = req.query.id;
+
+  try {
+    const [rows] = await db
+      .promise()
+      .query("SELECT * FROM ledger WHERE id = ?", [userId]);
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
