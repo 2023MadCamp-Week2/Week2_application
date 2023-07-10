@@ -93,19 +93,32 @@ app.post("/api/get-nickname", async (req, res) => {
   }
 });
 
-app.get("/api/get-list", async (req, res) => {
-  const { id } = req.query;
+app.post("/api/push_money", async (req, res) => {
+  const { id, user_id, date, type, amount, asset, category, description } =
+    req.body;
+
+  try {
+    const [result] = await db
+      .promise()
+      .query(
+        "INSERT INTO ledger (id, date, type, amount, asset, category, description) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        [id, date, type, amount, asset, category, description]
+      );
+
+    res.status(201).json({ message: "New record added!" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+app.get("/api/get_money", async (req, res) => {
+  const userId = req.query.id;
+
   try {
     const [rows] = await db
       .promise()
-      .query("SELECT * FROM users WHERE id = ?", [id]);
-    if (rows.length > 0) {
-      // 해당 ID를 가진 사용자의 모든 데이터를 반환
-      res.json({ data: rows });
-    } else {
-      // 해당 ID를 가진 사용자가 DB에 존재하지 않으면, 적절한 메시지와 함께 응답
-      res.json({ message: "No user with this ID found." });
-    }
+      .query("SELECT * FROM ledger WHERE id = ?", [userId]);
+    res.json(rows);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
