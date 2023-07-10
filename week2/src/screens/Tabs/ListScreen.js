@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
   separator: {
     height: 1, // 구분선의 높이를 정의합니다.
     width: "100%", // 구분선의 너비를 정의합니다.
-    backgroundColor: "#000", // 구분선의 색상을 정의합니다.
+    color: "#000", // 구분선의 색상을 정의합니다.
   },
   viewstyle: {
     flexDirection: "row", // 수평 방향으로 배치합니다.
