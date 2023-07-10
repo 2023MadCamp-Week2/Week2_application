@@ -1,16 +1,3 @@
-<<<<<<< HEAD
-import React from "react";
-import { Text, TouchableOpacity, View } from "react-native";
-import Icon from "react-native-vector-icons/MaterialIcons";
-import styled, {ThemeProvider} from 'styled-components/native'
-import Icon3 from "react-native-vector-icons/Entypo";
-
-function ListScreen() {
-  return (
-  <View style={{flex:1}}>
-    <Text>목록을 나타냅니다.</Text>
-  </View>
-=======
 import React, { useState, useEffect } from "react";
 import { FlatList, Text, View, StyleSheet, Image } from "react-native";
 
@@ -47,7 +34,6 @@ function ListScreen() {
         ItemSeparatorComponent={() => <View style={styles.separator} />} // 구분선 컴포넌트를 정의합니다.
       />
     </View>
->>>>>>> main
   );
 }
 
@@ -63,7 +49,7 @@ const styles = StyleSheet.create({
   separator: {
     height: 1, // 구분선의 높이를 정의합니다.
     width: "100%", // 구분선의 너비를 정의합니다.
-    backgroundColor: "#000", // 구분선의 색상을 정의합니다.
+    color: "#000", // 구분선의 색상을 정의합니다.
   },
   viewstyle: {
     flexDirection: "row", // 수평 방향으로 배치합니다.
