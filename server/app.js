@@ -145,3 +145,51 @@ app.get("/api/get_expense", async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+
+app.get("/api/get_income", async (req, res) => {
+  const userId = req.query.id;
+
+  try {
+    // 이번 달의 시작과 끝 날짜를 얻습니다.
+    const now = new Date();
+    const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const lastDayOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+    const [rows] = await db
+      .promise()
+      .query(
+        "SELECT SUM(amount) as totalIncome FROM ledger WHERE id = ? AND type = 'income' AND date BETWEEN ? AND ?",
+        [userId, firstDayOfMonth, lastDayOfMonth]
+      );
+    const totalIncome = rows[0].totalIncome || 0; // totalIncome가 NULL일 경우 0으로 처리
+    res.json({ totalIncome });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+app.delete("/api/delete_money", async (req, res) => {
+  const { id, date, amount, asset, category, description } = req.query;
+
+  const parsedId = parseInt(id);
+  const parsedAmount = parseInt(amount);
+
+  const parsedDate = new Date(date);
+
+  try {
+    const [result] = await db
+      .promise()
+      .query(
+        "DELETE FROM ledger WHERE id = ? AND date = ? AND amount = ? AND asset = ? AND category = ? AND description = ?",
+        [parsedId, parsedDate, parsedAmount, asset, category, description]
+      );
+
+    if (result.affectedRows > 0) {
+      res.status(200).json({ message: "Record deleted successfully!" });
+    } else {
+      res.status(404).json({ message: "No record found with this ID." });
+    }
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});

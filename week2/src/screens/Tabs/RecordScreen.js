@@ -10,6 +10,7 @@ import {
   StyleSheet,
   ScrollView,
   RefreshControl,
+  Alert,
 } from "react-native";
 import Icon3 from "react-native-vector-icons/Entypo";
 import Icon4 from "react-native-vector-icons/AntDesign";
@@ -25,12 +26,14 @@ import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import colors from "../../../assets/colors";
 import SearchModal from "../../RecordScreenComponents/SearchModal";
+import { v4 as uuidv4 } from "uuid";
+import Toast from "react-native-toast-message";
 const IPv4 = "143.248.195.179";
 const Stack = createStackNavigator();
 
 function RecordScreen({ route, navigation, userInfo }) {
   React.useEffect(() => {
-    console.log(userInfo.id);
+    console.log("현재 아이디: ", userInfo.id);
   }, []);
 
   var Myid = userInfo.id;
@@ -91,17 +94,18 @@ function RecordScreen({ route, navigation, userInfo }) {
       const formattedData = data2.map((item) => {
         return {
           ...item,
+          key: uuidv4(),
           date: item.date.toLocaleString(),
           asset: item.asset.toLocaleString(),
           category: item.category.toLocaleString(),
           content: item.description.toLocaleString(),
           amount: item.amount.toLocaleString() + "원",
           isPlus: item.type !== "expense",
+          originalItem: item, // 원본 데이터를 보존
         };
       });
 
       setListItems(formattedData);
-      console.log("Data fetched and set:", formattedData);
     } catch (error) {
       console.error("Error:", error);
     }
@@ -116,9 +120,45 @@ function RecordScreen({ route, navigation, userInfo }) {
       amount={item.amount}
       content={item.content}
       isPlus={item.isPlus}
+      onItemLongPress={() => onLongPressItem(item)}
     />
   );
-  console.log(listItems);
+
+  const deleteItem = async (item) => {
+    try {
+      const response = await fetch(
+        `http://${IPv4}:3000/api/delete_money?id=${item.id}&date=${item.date}&amount=${item.amount}&asset=${item.asset}&category=${item.category}&description=${item.description}`,
+        { method: "DELETE" }
+      );
+
+      if (response.ok) {
+        Toast.show({
+          type: "success",
+          text1: "삭제",
+          text2: `기록이 삭제되었습니다.`,
+        });
+        fetchDataForUser();
+      } else {
+        console.error("Delete failed");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  const onLongPressItem = (item) => {
+    Alert.alert("삭제", "이 항목을 삭제하시겠습니까?", [
+      {
+        text: "취소",
+        onPress: () => console.log("Cancel Pressed"),
+        style: "cancel",
+      },
+      {
+        text: "확인",
+        onPress: () => deleteItem(item.originalItem), // 원본 데이터를 사용
+      },
+    ]);
+  };
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
