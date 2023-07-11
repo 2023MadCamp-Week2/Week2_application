@@ -9,7 +9,7 @@ import {
 import { useNavigation, useRoute } from "@react-navigation/native";
 import Toast from "react-native-toast-message";
 
-const IPv4 = "143.248.195.207";
+const IPv4 = "143.248.195.179";
 
 const Signup = () => {
   const navigation = useNavigation();

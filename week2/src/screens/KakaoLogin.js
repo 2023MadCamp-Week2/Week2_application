@@ -7,7 +7,7 @@ import Toast from "react-native-toast-message";
 
 const REST_API_KEY = "a925e5151b3222a586b7773df9205d84";
 const REDIRECT_URI = "http://localhost:19006";
-const IPv4 = "143.248.195.207";
+const IPv4 = "143.248.195.179";
 
 const KaKaoLogin = () => {
   const navigation = useNavigation();

@@ -14,7 +14,7 @@ import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import colors from "../../../assets/colors";
 import SearchModal from '../../RecordScreenComponents/SearchModal';
-const IPv4 = "143.248.195.207";
+const IPv4 = "143.248.195.179";
 const Stack = createStackNavigator();
 
 function RecordScreen({ route, navigation, userInfo }) {

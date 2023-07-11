@@ -19,7 +19,7 @@ import CategoryModal from './CategoryModal';
 import moment from 'moment';
 // import { ToastContainer, useToast } from 'react-native-toast-message';
 
-const IPv4 = "143.248.195.207";
+const IPv4 = "143.248.195.179";
 
 const ModalContent = ({ onClose, onAddItem, userInfo }) => {
     const handleClose = () => {
