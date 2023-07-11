@@ -171,6 +171,7 @@ function RecordScreen({ route, navigation, userInfo }) {
           <Icon6 name="search" size={25} color="black" />
         </TouchableOpacity>
       </View>
+      <View style={styles.separator} />
       <View style={styles.container}>
         <FlatList
           ListHeaderComponent={
@@ -312,7 +313,7 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
   },
   headerContainer: {
-    backgroundColor: "skyblue",
+    backgroundColor: "#77BDFF",
     shadowColor: "black",
     shadowOffset: {
       width: 0,
@@ -327,7 +328,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "skyblue",
+    backgroundColor: "white",
   },
   title: {
     fontSize: 20,
@@ -343,7 +344,6 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 1,
     backgroundColor: "lightgray",
-    marginBottom: 10,
   },
   amountText: {
     fontWeight: "bold",

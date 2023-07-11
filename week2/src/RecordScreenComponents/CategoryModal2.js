@@ -1,22 +1,24 @@
 import React from 'react';
-import { View, Text, Modal, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
+import { View, Text, Modal, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Dimensions } from 'react-native';
 
-const AssetModal = ({ visible, onClose, onSelectAsset }) => {
-  const handleSelectAsset = (asset) => {
-    onSelectAsset(asset);
+const CategoryModal2 = ({ visible, onClose, onSelectCategory }) => {
+  const handleSelectCategory = (category) => {
+    onSelectCategory(category);
     onClose();
   };
+  
+//   const categories = ["월급", "용돈", "장학금", "환불", "금융소득", "선물", "식비", "교통", "문화생활", "학업", "생활용품", "기타"];
+  const categories1 = ["월급", "용돈", "장학금", "환불", "금융소득", "선물"];
+  const categories = ["식비", "교통", "문화생활", "학업", "생활용품", "기타"];
 
-  const assets = ['현금', '은행', '카드', '대출'];
-
-  const renderAssetButtons = () => {
-    return assets.map((asset, index) => (
+  const renderCategoryButtons = () => {
+    return categories.map((category, index) => (
       <TouchableOpacity
         key={index}
-        style={styles.assetButton}
-        onPress={() => handleSelectAsset(asset)}
+        style={styles.categoryButton}
+        onPress={() => handleSelectCategory(category)}
       >
-        <Text style={styles.assetButtonText}>{asset}</Text>
+        <Text style={styles.categoryButtonText}>{category}</Text>
       </TouchableOpacity>
     ));
   };
@@ -32,7 +34,7 @@ const AssetModal = ({ visible, onClose, onSelectAsset }) => {
               </TouchableOpacity>
             </View>
             <ScrollView contentContainerStyle={styles.gridContainer}>
-              {renderAssetButtons()}
+              {renderCategoryButtons()}
             </ScrollView>
           </View>
         </View>
@@ -40,6 +42,9 @@ const AssetModal = ({ visible, onClose, onSelectAsset }) => {
     </SafeAreaView>
   );
 };
+
+const { width } = Dimensions.get('window');
+const buttonWidth = (width - 40 - 20 * 2) / 3;
 
 const styles = StyleSheet.create({
   header: {
@@ -62,7 +67,7 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     alignSelf: 'flex-end',
-    marginBottom: 10,
+    // marginBottom: 10,
   },
   closeButtonText: {
     fontSize: 16,
@@ -73,23 +78,23 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    paddingHorizontal: 5,
-    paddingTop: 10,
+    alignItems: 'flex-start',
+    paddingVertical: 20,
   },
-  assetButton: {
-    width: '30%',
+  categoryButton: {
+    width: buttonWidth,
     height: 76,
     borderRadius: 8,
-    backgroundColor: 'lightgray',
+    backgroundColor: '#FF9B9B',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 20,
   },
-  assetButtonText: {
+  categoryButtonText: {
     fontSize: 16,
     fontWeight: 'bold',
     color: 'white',
   },
 });
 
-export default AssetModal;
+export default CategoryModal2;

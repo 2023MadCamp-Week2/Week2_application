@@ -5,7 +5,6 @@ import Icon5 from 'react-native-vector-icons/Feather';
 import Icon6 from "react-native-vector-icons/FontAwesome";
 import RecordItemList from './RecordItemList';
 import RecordItem from './RecordItem';
-import DatePicker from 'react-native-datepicker';
 import colors from '../../assets/colors.js';
 import AssetModal from './AssetModal';
 import CategoryModal from './CategoryModal';
@@ -62,6 +61,7 @@ const SearchModal = ({ onClose, listItems }) => {
             onChangeText={setSearchText}
           />
         </View>
+        <View style={styles.headerseparator} />
       </View>
       <View style={styles.container}>
         <FlatList
@@ -84,21 +84,21 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     flexDirection: 'column',
-    backgroundColor: 'skyblue',
-    shadowColor: 'black',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 2,
-    elevation: 3,
+    backgroundColor: 'white',
+    // shadowColor: 'black',
+    // shadowOffset: {
+    //   width: 0,
+    //   height: 2,
+    // },
+    // shadowOpacity: 0.8,
+    // shadowRadius: 2,
+    // elevation: 3,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: 'skyblue',
+    backgroundColor: 'white',
     paddingTop: 15,
     paddingLeft: 10,
     paddingBottom:5,
@@ -120,16 +120,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     padding: 10,
     borderRadius: 10,
-    backgroundColor: 'white',
+    backgroundColor: '#E1E1E1',
     marginTop: 10,
     marginBottom: 15,
     marginHorizontal: 15,
+  },
+  headerseparator:{
+    width: "100%",
+    height: 1,
+    backgroundColor: "lightgray",
   },
   searchInput: {
     flex: 7,
     fontSize: 16,
     color: 'black',
     paddingHorizontal: 10,
+    backgroundColor: '#E1E1E1',
   },
   row: {
     flexDirection: 'row',

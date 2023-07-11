@@ -6,8 +6,10 @@ const CategoryModal = ({ visible, onClose, onSelectCategory }) => {
     onSelectCategory(category);
     onClose();
   };
-
-  const categories = ['식비', '학업', '교통', '선물', '월급'];
+  
+  // const categories = ["월급", "용돈", "장학금", "환불", "금융소득", "선물", "식비", "교통", "문화생활", "학업", "생활용품", "기타"];
+  const categories = ["월급", "용돈", "장학금", "환불", "금융소득", "선물"];
+  const categories2 = ["식비", "교통", "문화생활", "학업", "생활용품", "기타"];
 
   const renderCategoryButtons = () => {
     return categories.map((category, index) => (
