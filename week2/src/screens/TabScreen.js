@@ -50,12 +50,12 @@ function BottomTabNavigationApp({ route }) {
         {(props) => <RecordScreen {...props} userInfo={userInfo} />}
       </Tab.Screen>
       <Tab.Screen
-        name="더 보기"
+        name="내 정보"
         options={{
           headerShown: false,
-          title: "더 보기",
+          title: "내 정보",
           tabBarIcon: ({ color, size }) => (
-            <Icon name="more-vert" color={color} size={size} />
+            <Icon name="contact-page" color={color} size={size} />
           ),
         }}
       >

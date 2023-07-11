@@ -13,16 +13,10 @@ import {
   Alert,
 } from "react-native";
 import Icon3 from "react-native-vector-icons/Entypo";
-import Icon4 from "react-native-vector-icons/AntDesign";
-import Icon5 from "react-native-vector-icons/Feather";
 import Icon6 from "react-native-vector-icons/FontAwesome";
-import { theme } from "../../theme";
 import { StatusBar } from "react-native";
-import Input from "../../RecordScreenComponents/input";
 import RecordItem from "../../RecordScreenComponents/RecordItem";
-import RecordItemList from "../../RecordScreenComponents/RecordItemList";
 import ModalContent from "../../RecordScreenComponents/ModalContent";
-import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import colors from "../../../assets/colors";
 import SearchModal from "../../RecordScreenComponents/SearchModal";
@@ -95,7 +89,8 @@ function RecordScreen({ route, navigation, userInfo }) {
         return {
           ...item,
           key: uuidv4(),
-          date: item.date.toLocaleString(),
+          date: new Date(item.date),
+
           asset: item.asset.toLocaleString(),
           category: item.category.toLocaleString(),
           content: item.description.toLocaleString(),
@@ -104,7 +99,7 @@ function RecordScreen({ route, navigation, userInfo }) {
           originalItem: item, // 원본 데이터를 보존
         };
       });
-
+      formattedData.sort((a, b) => b.date - a.date);
       setListItems(formattedData);
     } catch (error) {
       console.error("Error:", error);
@@ -127,7 +122,11 @@ function RecordScreen({ route, navigation, userInfo }) {
   const deleteItem = async (item) => {
     try {
       const response = await fetch(
-        `http://${IPv4}:3000/api/delete_money?id=${item.id}&date=${item.date}&amount=${item.amount}&asset=${item.asset}&category=${item.category}&description=${item.description}`,
+        `http://${IPv4}:3000/api/delete_money?id=${
+          item.id
+        }&date=${encodeURIComponent(item.date)}&amount=${item.amount}&asset=${
+          item.asset
+        }&category=${item.category}&description=${item.description}`,
         { method: "DELETE" }
       );
 

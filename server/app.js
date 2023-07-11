@@ -94,8 +94,7 @@ app.post("/api/get-nickname", async (req, res) => {
 });
 
 app.post("/api/push_money", async (req, res) => {
-  const { id, user_id, date, type, amount, asset, category, description } =
-    req.body;
+  const { id, date, type, amount, asset, category, description } = req.body;
 
   try {
     const [result] = await db
@@ -113,11 +112,15 @@ app.post("/api/push_money", async (req, res) => {
 
 app.get("/api/get_money", async (req, res) => {
   const userId = req.query.id;
+  const month = req.query.month;
 
   try {
     const [rows] = await db
       .promise()
-      .query("SELECT * FROM ledger WHERE id = ?", [userId]);
+      .query("SELECT * FROM ledger WHERE id = ? AND MONTH(date) = ?", [
+        userId,
+        month,
+      ]);
     res.json(rows);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -228,6 +231,42 @@ app.post("/api/add_comment", async (req, res) => {
       .promise()
       .query("SELECT * FROM comments WHERE id = ?", [result.insertId]);
     res.json(rows[0]);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+app.get("/api/get_user", async (req, res) => {
+  const userId = req.query.id;
+
+  try {
+    const [rows] = await db
+      .promise()
+      .query("SELECT nickname FROM users WHERE id = ?", [userId]);
+
+    if (rows.length > 0) {
+      res.json(rows[0]);
+    } else {
+      res.status(404).json({ message: "User not found" });
+    }
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+app.post("/api/update_nickname", async (req, res) => {
+  const { id, nickname } = req.body;
+
+  try {
+    const [result] = await db
+      .promise()
+      .query("UPDATE users SET nickname = ? WHERE id = ?", [nickname, id]);
+
+    if (result.affectedRows > 0) {
+      res.json({ success: true });
+    } else {
+      res.status(404).json({ message: "User not found" });
+    }
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

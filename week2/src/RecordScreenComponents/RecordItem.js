@@ -38,13 +38,11 @@ const RecordItem = ({
 };
 
 const formatDate = (date) => {
-  // Format the date as YY-MM-DD HH:MM
-  const formattedDate = new Date(date);
-  const year = formattedDate.getFullYear().toString().substr(-2);
-  const month = ("0" + (formattedDate.getMonth() + 1)).slice(-2);
-  const day = ("0" + formattedDate.getDate()).slice(-2);
-  const hours = ("0" + formattedDate.getHours()).slice(-2);
-  const minutes = ("0" + formattedDate.getMinutes()).slice(-2);
+  const year = date.getFullYear().toString().substr(-2);
+  const month = ("0" + (date.getMonth() + 1)).slice(-2);
+  const day = ("0" + date.getDate()).slice(-2);
+  const hours = ("0" + date.getHours()).slice(-2);
+  const minutes = ("0" + date.getMinutes()).slice(-2);
 
   return `${year}-${month}-${day}  ${hours}:${minutes}`;
 };

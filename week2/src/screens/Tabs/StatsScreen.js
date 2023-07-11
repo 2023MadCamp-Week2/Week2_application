@@ -7,7 +7,9 @@ import {
   StyleSheet,
   ScrollView,
   RefreshControl,
+  Modal,
   Dimensions,
+  Button,
 } from "react-native";
 import Icon7 from "react-native-vector-icons/MaterialCommunityIcons";
 import { StatusBar } from "react-native";
@@ -15,6 +17,8 @@ import RecordItem from "../../RecordScreenComponents/RecordItem";
 import { createStackNavigator } from "@react-navigation/stack";
 import colors from "../../../assets/colors";
 import { PieChart } from "react-native-chart-kit";
+import { Picker } from "@react-native-picker/picker";
+
 const IPv4 = "143.248.195.179";
 
 const Stack = createStackNavigator();
@@ -24,12 +28,15 @@ function StatsScreen({ userInfo }) {
 
   const [isModalVisible, setModalVisible] = useState(false);
   const [listItems, setListItems] = useState([]);
-  const [textinput, setInputText] = useState("");
   const [isSearchModalVisible, setSearchModalVisible] = useState(false);
   const [totalIncome, setTotalIncome] = useState(0);
   const [totalExpense, setTotalExpense] = useState(0);
   const [totalSum, setTotalSum] = useState("");
   const [refreshing, setRefreshing] = useState(false);
+  const [selectedMonth, setSelectedMonth] = useState(currentMonth);
+
+  const datenow = new Date();
+  const currentMonth = datenow.getMonth() + 1;
 
   useEffect(() => {
     let incomeSum = 0;
@@ -56,16 +63,16 @@ function StatsScreen({ userInfo }) {
 
   useEffect(() => {
     fetchDataForUser();
-  }, []);
+  }, [selectedMonth]);
 
   const fetchDataForUser = useCallback(async () => {
     setRefreshing(true);
     try {
       const response = await fetch(
-        `http://${IPv4}:3000/api/get_money?id=${Myid}`
+        `http://${IPv4}:3000/api/get_money?id=${Myid}&month=${selectedMonth}`
       );
       const data2 = await response.json();
-
+      console.log(data2);
       const formattedData = data2.map((item) => {
         return {
           ...item,
@@ -79,41 +86,41 @@ function StatsScreen({ userInfo }) {
       });
 
       setListItems(formattedData);
-      console.log("Data fetched and set:", formattedData);
     } catch (error) {
       console.error("Error:", error);
     }
     setRefreshing(false);
-  }, [Myid]);
+  }, [Myid, selectedMonth]);
 
   const colors = ["#2279FF", "#55ABFF", "#77BDFF", "#99DFFF", "white"];
+
+  const handleMonthSelect = (month) => {
+    setSelectedMonth(month);
+  };
 
   const calculateExpensePercentage = () => {
     const uniqueCategories = Array.from(
       new Set(listItems.map((item) => item.category))
     );
 
-    // Initialize categories with 0 amount
     const categoryTotals = {};
     uniqueCategories.forEach((category) => {
       categoryTotals[category] = 0;
     });
 
-    // Calculate the total expense for each category
     listItems.forEach((item) => {
       if (!item.isPlus) {
         categoryTotals[item.category] += item.amount;
       }
     });
 
-    console.log("amount values:", categoryTotals);
+    //console.log("amount values:", categoryTotals);
 
     const totalExpense = Object.values(categoryTotals).reduce(
       (a, b) => a + b,
       0
     );
 
-    // Calculate the percentage of total expense for each category
     const expensePercentages = Object.entries(categoryTotals).map(
       ([category, amount]) => ({
         name: category,
@@ -146,9 +153,9 @@ function StatsScreen({ userInfo }) {
       }
     );
 
-    console.log("categorytotals:", categoryTotals);
+    //console.log("categorytotals:", categoryTotals);
 
-    console.log("percentages:", expensePercentages);
+    //console.log("percentages:", expensePercentages);
 
     return data;
   };
@@ -160,9 +167,13 @@ function StatsScreen({ userInfo }) {
   const handleAddItem = (newItem) => {
     setListItems((prevItems) => [newItem, ...prevItems]);
   };
+  useEffect(() => {
+    //console.log(isSearchModalVisible);
+  }, [isSearchModalVisible]);
 
   const toggleSearchModal = () => {
     setSearchModalVisible(!isSearchModalVisible);
+    setModalVisible(!isModalVisible);
   };
 
   const renderItem = ({ item }) => (
@@ -254,11 +265,36 @@ function StatsScreen({ userInfo }) {
               backgroundColor={"transparent"}
               accessor="amount"
               paddingLeft="20"
-              // style={styles.piechartlayout}
               avoidFalseZero
             />
           </View>
         </ScrollView>
+        <Modal
+          animationType="slide"
+          visible={isSearchModalVisible}
+          onRequestClose={toggleSearchModal}
+        >
+          <View style={styles.monthPicker}>
+            <Picker
+              selectedValue={selectedMonth}
+              onValueChange={(itemValue) => handleMonthSelect(itemValue)}
+            >
+              <Picker.Item label="1월" value="1" />
+              <Picker.Item label="2월" value="2" />
+              <Picker.Item label="3월" value="3" />
+              <Picker.Item label="4월" value="4" />
+              <Picker.Item label="5월" value="5" />
+              <Picker.Item label="6월" value="6" />
+              <Picker.Item label="7월" value="7" />
+              <Picker.Item label="8월" value="8" />
+              <Picker.Item label="9월" value="9" />
+              <Picker.Item label="10월" value="10" />
+              <Picker.Item label="11월" value="11" />
+              <Picker.Item label="12월" value="12" />
+            </Picker>
+            <Button title="확인" onPress={toggleSearchModal} />
+          </View>
+        </Modal>
       </View>
     </SafeAreaView>
   );
