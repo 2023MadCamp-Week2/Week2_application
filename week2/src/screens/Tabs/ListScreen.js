@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Modal,
   Button,
+  TextInput,
 } from "react-native";
 
 const IPv4 = "143.248.195.179";
@@ -17,6 +18,10 @@ function ListScreen() {
   const [selectedUser, setSelectedUser] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedUserDetails, setSelectedUserDetails] = useState(null);
+  const [commentModalVisible, setCommentModalVisible] = useState(false);
+  const [selectedExpense, setSelectedExpense] = useState(null);
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState("");
 
   const openModal = async (user) => {
     setSelectedUser(user);
@@ -38,9 +43,55 @@ function ListScreen() {
     setModalVisible(false);
   };
 
+  const openCommentModal = async (expense) => {
+    setSelectedExpense(expense);
+    try {
+      const response = await fetch(
+        `http://${IPv4}:3000/api/get_comments?expense_id=${expense.expense_id}`
+      );
+      const expenseComments = await response.json();
+      setComments(expenseComments);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+    setCommentModalVisible(true);
+  };
+
+  const closeCommentModal = () => {
+    setSelectedExpense(null);
+    setComments([]);
+    setNewComment("");
+    setCommentModalVisible(false);
+  };
+
+  const addComment = async () => {
+    try {
+      const response = await fetch(`http://${IPv4}:3000/api/add_comment`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          content: newComment,
+          post_user_id: selectedExpense.user_id,
+          comment_user_id: userInfo.id, // 앱에서 현재 사용자 정보를 가져와야 합니다.
+          expense_id: selectedExpense.expense_id,
+        }),
+      });
+      const newComment = await response.json();
+      setComments([...comments, newComment]);
+      setNewComment("");
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
   useEffect(() => {
     fetchUsers();
   }, []);
+  useEffect(() => {
+    console.log(commentModalVisible);
+  }, [commentModalVisible]);
 
   const fetchUsers = async () => {
     try {
@@ -118,17 +169,47 @@ function ListScreen() {
               {selectedUserDetails
                 .filter((detail) => detail.type === "expense") // 지출만 필터링
                 .map((detail, index) => (
-                  <View key={index} style={styles.detailContainer}>
-                    <Text style={styles.detailText}>
-                      항목: {detail.description}
-                    </Text>
-                    <Text style={styles.detailText}>금액: {detail.amount}</Text>
-                    {/* Add more details as needed */}
-                  </View>
+                  <TouchableOpacity
+                    key={index}
+                    onPress={() => openCommentModal(detail)}
+                  >
+                    <View style={styles.detailContainer}>
+                      <Text style={styles.detailText}>
+                        항목: {detail.description}
+                      </Text>
+                      <Text style={styles.detailText}>
+                        금액: {detail.amount}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
                 ))}
             </View>
           )}
           <Button title="닫기" onPress={closeModal} />
+        </View>
+      </Modal>
+      <Modal
+        animationType="slide"
+        transparent={false}
+        visible={commentModalVisible}
+        onRequestClose={closeCommentModal}
+      >
+        <View style={styles.modalContent}>
+          <Text style={styles.modalTitle}>댓글</Text>
+          {comments.map((comment, index) => (
+            <View key={index} style={styles.commentContainer}>
+              <Text style={styles.commentText}>{comment.content}</Text>
+              {/* Add more details as needed */}
+            </View>
+          ))}
+          <TextInput
+            style={styles.input}
+            placeholder="Add a comment..."
+            value={newComment}
+            onChangeText={setNewComment}
+          />
+          <Button title="댓글 추가" onPress={addComment} />
+          <Button title="닫기" onPress={closeCommentModal} />
         </View>
       </Modal>
       <FlatList

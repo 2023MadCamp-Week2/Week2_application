@@ -193,3 +193,36 @@ app.delete("/api/delete_money", async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+
+app.get("/api/get_comments", async (req, res) => {
+  const expenseId = req.query.expense_id;
+
+  try {
+    const [rows] = await db
+      .promise()
+      .query("SELECT * FROM comments WHERE expense_id = ?", [expenseId]);
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+app.post("/api/add_comment", async (req, res) => {
+  const { content, post_user_id, comment_user_id, expense_id } = req.body;
+
+  try {
+    const [result] = await db
+      .promise()
+      .query(
+        "INSERT INTO comments (content, post_user_id, comment_user_id, expense_id) VALUES (?, ?, ?, ?)",
+        [content, post_user_id, comment_user_id, expense_id]
+      );
+
+    const [rows] = await db
+      .promise()
+      .query("SELECT * FROM comments WHERE id = ?", [result.insertId]);
+    res.json(rows[0]);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
