@@ -16,7 +16,7 @@ const RecordItem = ({ date, asset, category, amount, content, isPlus }) => {
           {content}
         </Text>
         <Text style={[styles.amountText, isPlus ? styles.amountTextGreen : styles.amountTextRed]}>
-          {isPlus ? '+' + amount : '-' + amount}
+          {isPlus ? '+' + amount: '-' + amount}
         </Text>
       </View>
       {/* <View style={styles.row}>

@@ -21,7 +21,7 @@ import Input from "../../RecordScreenComponents/input";
 import RecordItem from "../../RecordScreenComponents/RecordItem";
 import RecordItemList from "../../RecordScreenComponents/RecordItemList";
 import ModalContent from "../../RecordScreenComponents/ModalContent";
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import colors from "../../../assets/colors";
 import SearchModal from "../../RecordScreenComponents/SearchModal";
@@ -91,6 +91,10 @@ function RecordScreen({ route, navigation, userInfo }) {
       const formattedData = data2.map((item) => {
         return {
           ...item,
+          date: item.date.toLocaleString(),
+          asset: item.asset.toLocaleString(),
+          category: item.category.toLocaleString(),
+          content: item.description.toLocaleString(),
           amount: item.amount.toLocaleString() + "원",
           isPlus: item.type !== "expense",
         };
@@ -233,6 +237,13 @@ const styles = StyleSheet.create({
     margin: 10,
     alignItems: "center",
     width: "40%",
+  },
+  resultSumBox: {
+    backgroundColor: "white",
+    // padding: 10,
+    margin: 10,
+    alignItems: "center",
+    width: "80%",
   },
   resultRow: {
     flexDirection: "row",
