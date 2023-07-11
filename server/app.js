@@ -209,13 +209,19 @@ app.get("/api/get_comments", async (req, res) => {
 
 app.post("/api/add_comment", async (req, res) => {
   const { content, post_user_id, comment_user_id, expense_id } = req.body;
+  const currentDateTime = new Date();
+  currentDateTime.setHours(currentDateTime.getHours() + 9);
+  const writetime = currentDateTime
+    .toISOString()
+    .slice(0, 19)
+    .replace("T", " ");
 
   try {
     const [result] = await db
       .promise()
       .query(
-        "INSERT INTO comments (content, post_user_id, comment_user_id, expense_id) VALUES (?, ?, ?, ?)",
-        [content, post_user_id, comment_user_id, expense_id]
+        "INSERT INTO comments (content, writetime, post_user_id, comment_user_id, expense_id) VALUES (?, ?, ?, ?, ?)",
+        [content, writetime, post_user_id, comment_user_id, expense_id]
       );
 
     const [rows] = await db

@@ -13,7 +13,7 @@ import {
 
 const IPv4 = "143.248.195.179";
 
-function ListScreen() {
+function ListScreen({ userInfo }) {
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -22,6 +22,8 @@ function ListScreen() {
   const [selectedExpense, setSelectedExpense] = useState(null);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
+  const [closingUserModal, setClosingUserModal] = useState(false);
+  const [openingCommentModal, setOpeningCommentModal] = useState(false);
 
   const openModal = async (user) => {
     setSelectedUser(user);
@@ -44,17 +46,74 @@ function ListScreen() {
   };
 
   const openCommentModal = async (expense) => {
+    console.log("opening comment modal with expense", expense);
     setSelectedExpense(expense);
+    setModalVisible(false); // 사용자 정보 모달을 닫습니다.
+  };
+
+  useEffect(() => {
+    console.log(
+      "closingUserModal or selectedExpense changed:",
+      closingUserModal
+    );
+    if (closingUserModal && selectedExpense) {
+      setClosingUserModal(false);
+    }
+    if (!closingUserModal && selectedExpense) {
+      console.log("calling fetchComments");
+      fetchComments(selectedExpense);
+    }
+  }, [closingUserModal, selectedExpense]);
+
+  const fetchComments = async (expense) => {
     try {
       const response = await fetch(
         `http://${IPv4}:3000/api/get_comments?expense_id=${expense.expense_id}`
       );
       const expenseComments = await response.json();
-      setComments(expenseComments);
+
+      // 사용자 정보를 가져오기 위해 API 호출
+      const userPromises = expenseComments.map(async (comment) => {
+        const userResponse = await fetch(
+          `http://${IPv4}:3000/api/user?id=${comment.comment_user_id}`
+        );
+        const userData = await userResponse.json();
+
+        // comment_user_id와 일치하는 사용자 정보를 찾기
+        const user = userData.find(
+          (user) => user.id === comment.comment_user_id
+        );
+
+        if (user) {
+          let timeString = new Date(comment.writetime).toLocaleString("ko-KR", {
+            timeZone: "Asia/Seoul",
+            hour12: false,
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+          return {
+            ...comment,
+            nickname: user.nickname,
+            writetime: timeString,
+          }; // 닉네임과 작성 시간 추가
+        } else {
+          // 사용자 정보를 찾을 수 없는 경우 처리
+          console.warn(
+            `User not found for comment_user_id: ${comment.comment_user_id}`
+          );
+          return comment;
+        }
+      });
+
+      const commentsWithUserInfo = await Promise.all(userPromises);
+      setComments(commentsWithUserInfo);
+      setCommentModalVisible(true);
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error in fetchComments:", error);
     }
-    setCommentModalVisible(true);
   };
 
   const closeCommentModal = () => {
@@ -62,27 +121,46 @@ function ListScreen() {
     setComments([]);
     setNewComment("");
     setCommentModalVisible(false);
+    setModalVisible(true); // 사용자 정보 모달을 다시 엽니다.
   };
 
   const addComment = async () => {
-    try {
-      const response = await fetch(`http://${IPv4}:3000/api/add_comment`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          content: newComment,
-          post_user_id: selectedExpense.user_id,
-          comment_user_id: userInfo.id, // 앱에서 현재 사용자 정보를 가져와야 합니다.
-          expense_id: selectedExpense.expense_id,
-        }),
-      });
-      const newComment = await response.json();
-      setComments([...comments, newComment]);
-      setNewComment("");
-    } catch (error) {
-      console.error("Error:", error);
+    if (selectedExpense) {
+      try {
+        const response = await fetch(`http://${IPv4}:3000/api/add_comment`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            content: newComment,
+            post_user_id: selectedExpense.id,
+            comment_user_id: userInfo.id,
+            expense_id: selectedExpense.expense_id,
+          }),
+        });
+        const newCommentResponse = await response.json();
+
+        // 사용자의 닉네임 가져오기
+        const commentUserResponse = await fetch(
+          `http://${IPv4}:3000/api/user?id=${userInfo.id}`
+        );
+        const commentUserData = await commentUserResponse.json();
+
+        // 댓글 객체에 닉네임 추가
+        const commentWithUserInfo = {
+          ...newCommentResponse,
+          nickname: commentUserData.nickname,
+        };
+
+        setComments([...comments, commentWithUserInfo]);
+        setNewComment("");
+        fetchComments(selectedExpense);
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    } else {
+      console.error("Cannot add a comment: No expense selected");
     }
   };
 
@@ -170,8 +248,8 @@ function ListScreen() {
                 .filter((detail) => detail.type === "expense") // 지출만 필터링
                 .map((detail, index) => (
                   <TouchableOpacity
-                    key={index}
                     onPress={() => openCommentModal(detail)}
+                    key={detail.expense_id}
                   >
                     <View style={styles.detailContainer}>
                       <Text style={styles.detailText}>
@@ -195,23 +273,52 @@ function ListScreen() {
         onRequestClose={closeCommentModal}
       >
         <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>댓글</Text>
+          <Text style={styles.modalTitle}>한줄 코멘트</Text>
           {comments.map((comment, index) => (
             <View key={index} style={styles.commentContainer}>
-              <Text style={styles.commentText}>{comment.content}</Text>
-              {/* Add more details as needed */}
+              <Text style={styles.commentDate}>{comment.writetime}</Text>
+              <Text style={styles.commentText}>
+                {comment.nickname} : {comment.content}
+              </Text>
+              <View style={styles.commentSeparator} />
             </View>
           ))}
-          <TextInput
-            style={styles.input}
-            placeholder="Add a comment..."
-            value={newComment}
-            onChangeText={setNewComment}
-          />
-          <Button title="댓글 추가" onPress={addComment} />
-          <Button title="닫기" onPress={closeCommentModal} />
+
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.input}
+              placeholder="여기에 댓글을 입력하세요!"
+              value={newComment}
+              onChangeText={setNewComment}
+            />
+          </View>
+          <TouchableOpacity
+            style={{
+              backgroundColor: "#007BFF",
+              padding: 10,
+              borderRadius: 5,
+              marginTop: 20,
+            }}
+            onPress={addComment}
+          >
+            <Text style={{ color: "white", textAlign: "center" }}>
+              댓글 추가
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{
+              backgroundColor: "#6c757d",
+              padding: 10,
+              borderRadius: 5,
+              marginTop: 20,
+            }}
+            onPress={closeCommentModal}
+          >
+            <Text style={{ color: "white", textAlign: "center" }}>닫기</Text>
+          </TouchableOpacity>
         </View>
       </Modal>
+
       <FlatList
         data={users}
         keyExtractor={(item) => item.id.toString()}
@@ -297,14 +404,14 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     flex: 1,
-    justifyContent: "center",
     padding: 20,
+    marginTop: 50,
+    backgroundColor: "#f8f9fa",
   },
   modalTitle: {
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 20,
-    textAlign: "center",
   },
   userDetail: {
     alignItems: "center",
@@ -334,6 +441,41 @@ const styles = StyleSheet.create({
   },
   detailText: {
     fontSize: 16,
+  },
+  commentContainer: {
+    backgroundColor: "#f8f8f8",
+    borderRadius: 5,
+    padding: 10,
+    margin: 10,
+    flexDirection: "row",
+    justifyContent: "space-between", // 이 속성을 추가해서 시간과 댓글 텍스트 사이의 간격을 늘릴 수 있습니다.
+    alignItems: "center",
+  },
+  commentText: {
+    flex: 1,
+    fontSize: 16,
+    marginLeft: 10,
+  },
+  commentDate: {
+    fontSize: 12,
+    color: "#888",
+  },
+  commentSeparator: {
+    height: 1,
+    backgroundColor: "#eee",
+    marginTop: 10,
+    marginBottom: 10,
+  },
+  input: {
+    marginTop: 10,
+    marginBottom: 10,
+    marginLeft: 5,
+    fontSize: 18,
+  },
+  inputContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 10,
   },
 });
 
