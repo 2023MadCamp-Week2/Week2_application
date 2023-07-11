@@ -10,12 +10,12 @@ import {
   Dimensions,
 } from "react-native";
 
-const CategoryModal = ({ visible, onClose, onSelectCategory }) => {
+const CategoryModal2 = ({ visible, onClose, onSelectCategory }) => {
   const handleSelectCategory = (category) => {
     onSelectCategory(category);
     onClose();
   };
-  const categories = ["월급", "용돈", "장학금", "환불", "금융소득", "선물"];
+  const categories = ["식비", "교통", "문화생활", "학업", "생활용품", "기타"];
 
   const renderCategoryButtons = () => {
     return categories.map((category, index) => (
@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
     width: buttonWidth,
     height: 76,
     borderRadius: 8,
-    backgroundColor: "lightblue",
+    backgroundColor: "#FF9B9B",
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 20,
@@ -103,4 +103,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CategoryModal;
+export default CategoryModal2;

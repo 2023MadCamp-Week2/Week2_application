@@ -127,6 +127,18 @@ app.get("/api/get_money", async (req, res) => {
   }
 });
 
+app.get("/api/get_money2", async (req, res) => {
+  const userId = req.query.id;
+  try {
+    const [rows] = await db
+      .promise()
+      .query("SELECT * FROM ledger WHERE id = ?", [userId]);
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 app.get("/api/get_expense", async (req, res) => {
   const userId = req.query.id;
 

@@ -1,28 +1,37 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, SafeAreaView, TextInput, Platform, FlatList } from 'react-native';
-import Icon4 from 'react-native-vector-icons/AntDesign';
-import Icon5 from 'react-native-vector-icons/Feather';
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  StyleSheet,
+  SafeAreaView,
+  TextInput,
+  Platform,
+  FlatList,
+} from "react-native";
+import Icon4 from "react-native-vector-icons/AntDesign";
+import Icon5 from "react-native-vector-icons/Feather";
 import Icon6 from "react-native-vector-icons/FontAwesome";
-import RecordItemList from './RecordItemList';
-import RecordItem from './RecordItem';
-import DatePicker from 'react-native-datepicker';
-import colors from '../../assets/colors.js';
-import AssetModal from './AssetModal';
-import CategoryModal from './CategoryModal';
-import moment from 'moment';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import { StatusBar } from 'react-native';
+import RecordItemList from "./RecordItemList";
+import RecordItem from "./RecordItem";
+import colors from "../../assets/colors.js";
+import AssetModal from "./AssetModal";
+import CategoryModal from "./CategoryModal";
+import moment from "moment";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { StatusBar } from "react-native";
 
 const SearchModal = ({ onClose, listItems }) => {
   const handleClose = () => {
     onClose(); // 모달을 닫기 위해 onClose 함수 호출
   };
 
-  const [searchText, setSearchText] = useState('');
+  const [searchText, setSearchText] = useState("");
   const [filteredItems, setFilteredItems] = useState([]);
 
   useEffect(() => {
-    if (searchText.trim() !== '') {
+    if (searchText.trim() !== "") {
       // Filter the listItems based on the searchText (case-insensitive)
       const filtered = listItems.filter((item) =>
         item.content.toLowerCase().includes(searchText.toLowerCase())
@@ -62,6 +71,7 @@ const SearchModal = ({ onClose, listItems }) => {
             onChangeText={setSearchText}
           />
         </View>
+        <View style={styles.headerseparator} />
       </View>
       <View style={styles.container}>
         <FlatList
@@ -74,72 +84,77 @@ const SearchModal = ({ onClose, listItems }) => {
   );
 };
 
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 20,
     paddingTop: 20,
-    backgroundColor: 'white',
+    backgroundColor: "white",
   },
   headerContainer: {
-    flexDirection: 'column',
-    backgroundColor: 'skyblue',
-    shadowColor: 'black',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 2,
-    elevation: 3,
+    flexDirection: "column",
+    backgroundColor: "white",
+    // shadowColor: 'black',
+    // shadowOffset: {
+    //   width: 0,
+    //   height: 2,
+    // },
+    // shadowOpacity: 0.8,
+    // shadowRadius: 2,
+    // elevation: 3,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: 'skyblue',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "white",
     paddingTop: 15,
     paddingLeft: 10,
-    paddingBottom:5,
+    paddingBottom: 5,
   },
   headerbutton: {
-    flexDirection: 'row',
+    flexDirection: "row",
     fontSize: 20,
-    fontWeight: 'bold',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
+    fontWeight: "bold",
+    alignItems: "center",
+    justifyContent: "flex-start",
   },
   headerbuttontext: {
-    color: 'black',
-    fontWeight: 'bold',
+    color: "black",
+    fontWeight: "bold",
     fontSize: 20,
     // marginLeft: 5,
   },
   searchInputContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
     padding: 10,
     borderRadius: 10,
-    backgroundColor: 'white',
+    backgroundColor: "#E1E1E1",
     marginTop: 10,
     marginBottom: 15,
     marginHorizontal: 15,
   },
+  headerseparator: {
+    width: "100%",
+    height: 1,
+    backgroundColor: "lightgray",
+  },
   searchInput: {
     flex: 7,
     fontSize: 16,
-    color: 'black',
+    color: "black",
     paddingHorizontal: 10,
+    backgroundColor: "#E1E1E1",
   },
   row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-end', // Align vertically to the bottom of the text
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-end", // Align vertically to the bottom of the text
     marginBottom: 5,
   },
   buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: 10,
     marginHorizontal: -10, // Adjusted margin to account for the negative margin on buttons
   },
@@ -147,17 +162,17 @@ const styles = StyleSheet.create({
     flex: 1, // Added flex property to make the buttons expand and fill the row
     marginHorizontal: 10, // Added horizontal margin to create spacing between buttons
     borderWidth: 1,
-    borderColor: 'gray',
+    borderColor: "gray",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
-    justifyContent: 'center', // Align button content vertically
-    alignItems: 'center', // Align button content horizontally
+    justifyContent: "center", // Align button content vertically
+    alignItems: "center", // Align button content horizontally
   },
   buttonText: {
-    color: 'gray',
-    fontWeight: 'bold',
-    alignItems: 'center',
+    color: "gray",
+    fontWeight: "bold",
+    alignItems: "center",
   },
   activeIncomeButton: {
     borderColor: colors.plusGreen,
@@ -166,10 +181,10 @@ const styles = StyleSheet.create({
     color: colors.plusGreen,
   },
   activeExpenseButton: {
-    borderColor: 'red',
+    borderColor: "red",
   },
   activeExpenseButtonText: {
-    color: 'red',
+    color: "red",
   },
   scrollView: {
     flex: 1,
@@ -178,61 +193,61 @@ const styles = StyleSheet.create({
     opacity: 0.2, // Reduce the opacity to make it appear grayed out
   },
   itemContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 10,
     paddingVertical: 10,
     paddingHorizontal: 16,
     borderWidth: 1,
-    borderColor: 'lightgray',
+    borderColor: "lightgray",
     borderRadius: 5,
     flex: 1,
   },
   itemTitle: {
     flex: 1,
     fontSize: 16,
-    alignItems: 'center',
+    alignItems: "center",
   },
   itemInput: {
     flex: 7,
     marginLeft: 10, // Add left margin for spacing
     paddingHorizontal: 10,
     fontSize: 16,
-    alignItems: 'center',
+    alignItems: "center",
   },
   itemButton: {
-    backgroundColor: 'lightblue',
+    backgroundColor: "lightblue",
     paddingVertical: 6,
     paddingHorizontal: 10,
     borderRadius: 3,
   },
   itemButtonText: {
-    color: 'white',
+    color: "white",
     fontSize: 14,
   },
   closeButton: {
-    backgroundColor: 'red',
+    backgroundColor: "red",
     paddingVertical: 10,
     paddingHorizontal: 16,
     borderRadius: 5,
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: 20,
   },
   closeButtonText: {
-    color: 'white',
+    color: "white",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   datePicker: {
     flex: 7,
     marginLeft: 10, // Add left margin for spacing
     fontSize: 20,
-    alignItems: 'center',
+    alignItems: "center",
   },
   ToastContainer: {
-    backgroundColor: 'gray',
-    color: 'white',
+    backgroundColor: "gray",
+    color: "white",
   },
 });
 

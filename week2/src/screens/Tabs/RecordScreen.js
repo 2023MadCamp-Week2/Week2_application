@@ -81,9 +81,11 @@ function RecordScreen({ route, navigation, userInfo }) {
     setRefreshing(true);
     try {
       const response = await fetch(
-        `http://${IPv4}:3000/api/get_money?id=${Myid}`
+        `http://${IPv4}:3000/api/get_money2?id=${Myid}`
       );
       const data2 = await response.json();
+      console.log(data2);
+      console.log(data2);
 
       const formattedData = data2.map((item) => {
         return {

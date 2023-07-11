@@ -16,6 +16,7 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 import colors from "../../assets/colors.js";
 import AssetModal from "./AssetModal";
 import CategoryModal from "./CategoryModal";
+import CategoryModal2 from "./CategoryModal2";
 import moment from "moment";
 // import { ToastContainer, useToast } from 'react-native-toast-message';
 
@@ -323,11 +324,19 @@ const ModalContent = ({ onClose, onAddItem, userInfo }) => {
         onClose={handleCloseAssetModal}
         onSelectAsset={handleAssetChange}
       />
-      <CategoryModal
-        visible={isCategoryModalVisible}
-        onClose={handleCloseCategoryModal}
-        onSelectCategory={handleCategoryChange}
-      />
+      {isIncomeActive ? (
+        <CategoryModal
+          visible={isCategoryModalVisible}
+          onClose={handleCloseCategoryModal}
+          onSelectCategory={handleCategoryChange}
+        />
+      ) : (
+        <CategoryModal2
+          visible={isCategoryModalVisible}
+          onClose={handleCloseCategoryModal}
+          onSelectCategory={handleCategoryChange}
+        />
+      )}
       <DateTimePickerModal
         style={styles.dateTimePickerModal}
         isVisible={isItemContainerPressed}
