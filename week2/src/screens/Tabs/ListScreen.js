@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FlatList, Text, View, StyleSheet, Image } from "react-native";
 
-const IPv4 = "143.248.195.207";
+const IPv4 = "143.248.195.179";
 
 function ListScreen() {
   const [users, setUsers] = useState([]);

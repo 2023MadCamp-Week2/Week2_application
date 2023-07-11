@@ -12,7 +12,7 @@ import {
 
 let imagePath = require("../../assets/finance.png");
 let buttonImagePath = require("../../assets/kakao_login.png"); // 로그인 버튼 이미지 경로
-const IPv4 = "143.248.195.207";
+const IPv4 = "143.248.195.179";
 
 const LoginScreen = ({ navigation }) => {
   const [username, setUsername] = useState("");
