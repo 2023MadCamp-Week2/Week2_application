@@ -3,34 +3,19 @@ import {
   Text,
   TouchableOpacity,
   View,
-  Modal,
   SafeAreaView,
-  FlatList,
-  TextInput,
   StyleSheet,
   ScrollView,
   RefreshControl,
   Dimensions,
 } from "react-native";
-import Icon3 from "react-native-vector-icons/Entypo";
-import Icon4 from "react-native-vector-icons/AntDesign";
-import Icon5 from "react-native-vector-icons/Feather";
-import Icon6 from "react-native-vector-icons/FontAwesome";
 import Icon7 from "react-native-vector-icons/MaterialCommunityIcons";
-import { theme } from "../../theme";
 import { StatusBar } from "react-native";
-import Input from "../../RecordScreenComponents/input";
 import RecordItem from "../../RecordScreenComponents/RecordItem";
-import RecordItemList from "../../RecordScreenComponents/RecordItemList";
-import ModalContent from "../../RecordScreenComponents/ModalContent";
-import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import colors from "../../../assets/colors";
-import SearchModal from "../../RecordScreenComponents/SearchModal";
 import { PieChart } from "react-native-chart-kit";
 const IPv4 = "143.248.195.179";
-
-// import ExpensePieChart from '../../RecordScreenComponents/ExpensePieChart';
 
 const Stack = createStackNavigator();
 
@@ -47,7 +32,6 @@ function StatsScreen({ userInfo }) {
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
-    // Calculate the total sum of income and expenses
     let incomeSum = 0;
     let expenseSum = 0;
     let totalSum = 0;
@@ -65,7 +49,6 @@ function StatsScreen({ userInfo }) {
     const formattedExpenseSum = expenseSum.toLocaleString();
     const formattedTotalSum = totalSum.toLocaleString();
 
-    // Update the state variables
     setTotalIncome(formattedIncomeSum + "원");
     setTotalExpense(formattedExpenseSum + "원");
     setTotalSum(formattedTotalSum + "원");
