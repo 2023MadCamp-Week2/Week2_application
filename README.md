@@ -1,11 +1,9 @@
 # README
 
-# MADCAMP Week 2
-# Project name : 돈보기
-
-# 팀원 - 김서현, 박성빈
-
-# Project 설명
+## MADCAMP Week 2
+### Project name : 돈보기
+### 팀원 - 김서현, 박성빈
+### Project 설명
 
 수입, 지출 내역을 정리하고 분석해주는 앱입니다. 또한, 가입한 사용자들의 수입, 지출 내역을 보고 댓글도 남길 수 있습니다!
 
