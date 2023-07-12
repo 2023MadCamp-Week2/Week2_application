@@ -22,6 +22,8 @@ import colors from "../../../assets/colors";
 import SearchModal from "../../RecordScreenComponents/SearchModal";
 import { v4 as uuidv4 } from "uuid";
 import Toast from "react-native-toast-message";
+import 'react-native-get-random-values';
+
 const IPv4 = "143.248.195.184";
 const Stack = createStackNavigator();
 
@@ -172,6 +174,7 @@ function RecordScreen({ route, navigation, userInfo }) {
           <Icon6 name="search" size={25} color="black" />
         </TouchableOpacity>
       </View>
+      <View style={styles.headerseparator}></View>
       <View style={styles.container}>
         <FlatList
           ListHeaderComponent={
@@ -328,7 +331,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "skyblue",
+    backgroundColor: "white",
   },
   title: {
     fontSize: 20,
@@ -345,6 +348,11 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: "lightgray",
     marginBottom: 10,
+  },
+  headerseparator:{
+    width: "100%",
+    height: 1,
+    backgroundColor: "lightgray",
   },
   amountText: {
     fontWeight: "bold",

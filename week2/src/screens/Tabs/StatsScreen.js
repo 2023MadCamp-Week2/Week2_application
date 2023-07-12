@@ -17,6 +17,7 @@ import RecordItem from "../../RecordScreenComponents/RecordItem";
 import { createStackNavigator } from "@react-navigation/stack";
 import colors from "../../../assets/colors";
 import { PieChart, BarChart } from "react-native-chart-kit";
+import { v4 as uuidv4 } from "uuid";
 import { Picker } from "@react-native-picker/picker";
 
 const IPv4 = "143.248.195.184";
@@ -33,10 +34,10 @@ function StatsScreen({ userInfo }) {
   const [totalExpense, setTotalExpense] = useState(0);
   const [totalSum, setTotalSum] = useState("");
   const [refreshing, setRefreshing] = useState(false);
-  const [selectedMonth, setSelectedMonth] = useState(currentMonth);
-
   const datenow = new Date();
   const currentMonth = datenow.getMonth() + 1;
+  const [selectedMonth, setSelectedMonth] = useState(currentMonth);
+
   useEffect(() => {
     let incomeSum = 0;
     let expenseSum = 0;
@@ -388,6 +389,7 @@ function StatsScreen({ userInfo }) {
           <Icon7 name="list-status" size={25} color="black" />
         </TouchableOpacity>
       </View>
+      <View style={styles.headerseparator}></View>
       <View style={styles.container}>
         <ScrollView
           refreshControl={
