@@ -11,7 +11,7 @@ import {
   TextInput,
 } from "react-native";
 
-const IPv4 = "143.248.195.179";
+const IPv4 = "143.248.195.184";
 
 function ListScreen({ userInfo }) {
   const [users, setUsers] = useState([]);

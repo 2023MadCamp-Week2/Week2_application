@@ -22,7 +22,7 @@ import colors from "../../../assets/colors";
 import SearchModal from "../../RecordScreenComponents/SearchModal";
 import { v4 as uuidv4 } from "uuid";
 import Toast from "react-native-toast-message";
-const IPv4 = "143.248.195.179";
+const IPv4 = "143.248.195.184";
 const Stack = createStackNavigator();
 
 function RecordScreen({ route, navigation, userInfo }) {

@@ -11,7 +11,7 @@ import {
   Modal,
   TouchableOpacity,
 } from "react-native";
-const IPv4 = "143.248.195.179";
+const IPv4 = "143.248.195.184";
 
 function Tab4Screen({ userInfo }) {
   const [nickname, setNickname] = useState("");

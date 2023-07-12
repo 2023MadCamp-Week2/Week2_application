@@ -19,7 +19,7 @@ import colors from "../../../assets/colors";
 import { PieChart, BarChart } from "react-native-chart-kit";
 import { Picker } from "@react-native-picker/picker";
 
-const IPv4 = "143.248.195.179";
+const IPv4 = "143.248.195.184";
 
 const Stack = createStackNavigator();
 
