@@ -38,7 +38,7 @@ function RecordScreen({ route, navigation, userInfo }) {
   const [textinput, setInputText] = useState("");
   const [isSearchModalVisible, setSearchModalVisible] = useState(false);
   const [totalIncome, setTotalIncome] = useState(0);
-  const [totalExpense, setTotalExpense] = useState(0);
+  const [totalExpense, setTotalExpense] = useState("0");
   const [totalSum, setTotalSum] = useState("");
   const [refreshing, setRefreshing] = useState(false);
 
@@ -71,6 +71,20 @@ function RecordScreen({ route, navigation, userInfo }) {
     fetchDataForUser();
   }, [fetchDataForUser]);
 
+  useEffect(() => {
+    const limitmoney = userInfo.limits;
+    const expense = parseInt(totalExpense.replace(/,/g, "").replace("원", ""));
+    console.log(limitmoney);
+    console.log(expense);
+    if (expense > limitmoney) {
+      Toast.show({
+        type: "error",
+        text1: "경고",
+        text2: "지출이 설정한 한도를 초과하였습니다.",
+      });
+    }
+  }, [totalExpense]);
+
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
   };
@@ -86,8 +100,12 @@ function RecordScreen({ route, navigation, userInfo }) {
         `http://${IPv4}:3000/api/get_money2?id=${Myid}`
       );
       const data2 = await response.json();
-      console.log(data2);
-      console.log(data2);
+
+      const userResponse = await fetch(
+        `http://${IPv4}:3000/api/get_user_info?id=${Myid}`
+      );
+      const userInfoData = await userResponse.json();
+      userInfo.limits = userInfoData.limits; // Updating userInfo.limits
 
       const formattedData = data2.map((item) => {
         return {
