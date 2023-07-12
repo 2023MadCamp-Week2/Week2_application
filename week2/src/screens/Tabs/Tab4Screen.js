@@ -136,7 +136,7 @@ function Tab4Screen({ userInfo }) {
             </View>
           </Modal>
           <Button
-            title="금액 설정"
+            title="금액 한도 설정"
             onPress={() => setLimitModalVisible(true)}
           />
           <Modal

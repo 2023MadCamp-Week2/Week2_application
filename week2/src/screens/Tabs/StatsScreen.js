@@ -360,7 +360,16 @@ function StatsScreen({ userInfo }) {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.header}>
-        <Text style={styles.title}>가계부</Text>
+        <View style={styles.headerrow}>
+          <Icon7
+            name="calendar-month"
+            size={25}
+            color="#77ACEE"
+            marginLeft="10%"
+          />
+          <Text style={styles.title}>나의 자산 현황</Text>
+        </View>
+        {/* <Text style={styles.title}>가계부</Text> */}
         <TouchableOpacity
           style={styles.headerbutton}
           onPress={toggleSearchModal}
@@ -368,6 +377,7 @@ function StatsScreen({ userInfo }) {
           <Icon7 name="list-status" size={25} color="black" />
         </TouchableOpacity>
       </View>
+      <View style={styles.headerseparator}></View>
       <View style={styles.container}>
         <ScrollView
           refreshControl={
@@ -611,14 +621,11 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     backgroundColor: "white",
-    shadowColor: "black",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 2,
-    elevation: 3,
+  },
+  headerrow: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "white",
   },
   title: {
     fontSize: 20,

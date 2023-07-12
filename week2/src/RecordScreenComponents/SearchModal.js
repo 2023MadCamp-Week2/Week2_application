@@ -21,6 +21,7 @@ import CategoryModal from "./CategoryModal";
 import moment from "moment";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { StatusBar } from "react-native";
+import { v4 as uuidv4 } from "uuid";
 
 const SearchModal = ({ onClose, listItems }) => {
   const handleClose = () => {
@@ -32,7 +33,6 @@ const SearchModal = ({ onClose, listItems }) => {
 
   useEffect(() => {
     if (searchText.trim() !== "") {
-      // Filter the listItems based on the searchText (case-insensitive)
       const filtered = listItems.filter((item) =>
         item.content.toLowerCase().includes(searchText.toLowerCase())
       );
@@ -77,7 +77,7 @@ const SearchModal = ({ onClose, listItems }) => {
         <FlatList
           data={filteredItems}
           renderItem={renderItem}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={(item) => item.key}
         />
       </View>
     </SafeAreaView>

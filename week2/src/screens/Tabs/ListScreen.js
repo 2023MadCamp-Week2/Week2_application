@@ -362,7 +362,7 @@ function ListScreen({ userInfo }) {
                     </View>
                     <View style={styles.itemBoxrow}>
                       <View style={styles.valueBox}>
-                        <Text style={styles.amountText}>지츨 </Text>
+                        <Text style={styles.amountText}>지출 </Text>
                         <Text style={[styles.amountText, styles.amountTextRed]}>
                           {currencyFormat(item.expense).amount}
                         </Text>

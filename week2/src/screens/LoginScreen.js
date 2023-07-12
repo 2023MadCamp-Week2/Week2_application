@@ -86,8 +86,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   image: {
-    height: 100,
-    width: 100,
+    height: 150,
+    width: 150,
   },
   input: {
     height: 40,
@@ -106,8 +106,9 @@ const styles = StyleSheet.create({
     height: 45,
   },
   text: {
-    marginTop: 10,
-    fontSize: 20,
+    marginTop: 20,
+    fontSize: 25,
+    fontWeight: "bold",
   },
 });
 

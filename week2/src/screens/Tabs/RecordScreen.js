@@ -145,11 +145,7 @@ function RecordScreen({ route, navigation, userInfo }) {
   const deleteItem = async (item) => {
     try {
       const response = await fetch(
-        `http://${IPv4}:3000/api/delete_money?id=${
-          item.id
-        }&date=${encodeURIComponent(item.date)}&amount=${item.amount}&asset=${
-          item.asset
-        }&category=${item.category}&description=${item.description}`,
+        `http://${IPv4}:3000/api/delete_money?id=${item.id}&date=${item.date}&amount=${item.amount}&asset=${item.asset}&category=${item.category}&description=${item.description}`,
         { method: "DELETE" }
       );
 
