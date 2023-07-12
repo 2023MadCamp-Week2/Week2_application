@@ -14,6 +14,7 @@ import {
 } from "react-native";
 import Icon3 from "react-native-vector-icons/Entypo";
 import Icon6 from "react-native-vector-icons/FontAwesome";
+import Icon7 from "react-native-vector-icons/MaterialCommunityIcons";
 import { StatusBar } from "react-native";
 import RecordItem from "../../RecordScreenComponents/RecordItem";
 import ModalContent from "../../RecordScreenComponents/ModalContent";
@@ -22,6 +23,8 @@ import colors from "../../../assets/colors";
 import SearchModal from "../../RecordScreenComponents/SearchModal";
 import { v4 as uuidv4 } from "uuid";
 import Toast from "react-native-toast-message";
+import "react-native-get-random-values";
+
 const IPv4 = "143.248.195.184";
 const Stack = createStackNavigator();
 
@@ -182,7 +185,15 @@ function RecordScreen({ route, navigation, userInfo }) {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.header}>
-        <Text style={styles.title}>가계부</Text>
+        <View style={styles.headerrow}>
+          <Icon7
+            name="note-edit-outline"
+            size={25}
+            color="red"
+            marginLeft="10%"
+          />
+          <Text style={styles.title}>가계부</Text>
+        </View>
         <TouchableOpacity
           style={styles.headerbutton}
           onPress={toggleSearchModal}
@@ -190,6 +201,7 @@ function RecordScreen({ route, navigation, userInfo }) {
           <Icon6 name="search" size={25} color="black" />
         </TouchableOpacity>
       </View>
+      <View style={styles.headerseparator}></View>
       <View style={styles.container}>
         <FlatList
           ListHeaderComponent={
@@ -217,7 +229,7 @@ function RecordScreen({ route, navigation, userInfo }) {
                   </View>
                 </View>
                 <View style={styles.resultRow}>
-                  <View style={styles.resultIndividualBox}>
+                  <View style={styles.resultSumBox}>
                     <Text style={styles.resultText}>합산</Text>
                     <Text
                       style={
@@ -346,7 +358,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "skyblue",
+    backgroundColor: "white",
+  },
+  headerrow: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "white",
   },
   title: {
     fontSize: 20,
@@ -363,6 +380,11 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: "lightgray",
     marginBottom: 10,
+  },
+  headerseparator: {
+    width: "100%",
+    height: 1,
+    backgroundColor: "lightgray",
   },
   amountText: {
     fontWeight: "bold",

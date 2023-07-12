@@ -10,7 +10,7 @@ import {
   Button,
 } from "react-native";
 
-let imagePath = require("../../assets/finance.png");
+let imagePath = require("../../assets/dbg.png");
 let buttonImagePath = require("../../assets/kakao_login.png"); // 로그인 버튼 이미지 경로
 const IPv4 = "143.248.195.184";
 
@@ -49,7 +49,7 @@ const LoginScreen = ({ navigation }) => {
     <View style={styles.container}>
       <View style={styles.imageContainer}>
         <Image style={styles.image} source={imagePath} />
-        <Text style={styles.text}>가계부!</Text>
+        <Text style={styles.text}>돈보기</Text>
       </View>
       <TextInput
         style={styles.input}
