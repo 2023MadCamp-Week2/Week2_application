@@ -11,12 +11,40 @@ import {
   Modal,
   TouchableOpacity,
 } from "react-native";
+import Toast from "react-native-toast-message";
 const IPv4 = "143.248.195.184";
 
 function Tab4Screen({ userInfo }) {
   const [nickname, setNickname] = useState("");
   const [newNickname, setNewNickname] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
+  const [limitAmount, setLimitAmount] = useState("");
+  const [limitModalVisible, setLimitModalVisible] = useState(false);
+
+  async function updateLimit() {
+    const response = await fetch(`http://${IPv4}:3000/api/update_limit`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id: userInfo.id,
+        limits: limitAmount,
+      }),
+    });
+
+    const data = await response.json();
+    if (data.success) {
+      setLimitModalVisible(false);
+      Toast.show({
+        type: "success",
+        text1: "금액 설정 완료",
+        text2: "앞으로 초과 지출 시 알림이 표시됩니다.",
+      });
+    } else {
+      alert("Failed to update limit");
+    }
+  }
 
   useEffect(() => {
     async function fetchNickname() {
@@ -100,6 +128,39 @@ function Tab4Screen({ userInfo }) {
                   <TouchableOpacity
                     style={styles.button}
                     onPress={() => setModalVisible(false)}
+                  >
+                    <Text style={styles.buttonText}>취소</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </Modal>
+          <Button
+            title="금액 설정"
+            onPress={() => setLimitModalVisible(true)}
+          />
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={limitModalVisible}
+          >
+            <View style={styles.centeredView}>
+              <View style={styles.modalView}>
+                <TextInput
+                  style={styles.textinputView}
+                  value={limitAmount}
+                  placeholder="금액 입력"
+                  onChangeText={(text) => setLimitAmount(text)}
+                />
+                <View
+                  style={[styles.buttonContainer, { flexDirection: "row" }]}
+                >
+                  <TouchableOpacity style={styles.button} onPress={updateLimit}>
+                    <Text style={styles.buttonText}>확인</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => setLimitModalVisible(false)}
                   >
                     <Text style={styles.buttonText}>취소</Text>
                   </TouchableOpacity>

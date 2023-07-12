@@ -33,10 +33,9 @@ function StatsScreen({ userInfo }) {
   const [totalExpense, setTotalExpense] = useState(0);
   const [totalSum, setTotalSum] = useState("");
   const [refreshing, setRefreshing] = useState(false);
-  const [selectedMonth, setSelectedMonth] = useState(currentMonth);
-
   const datenow = new Date();
   const currentMonth = datenow.getMonth() + 1;
+  const [selectedMonth, setSelectedMonth] = useState(currentMonth);
   useEffect(() => {
     let incomeSum = 0;
     let expenseSum = 0;

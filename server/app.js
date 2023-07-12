@@ -283,3 +283,33 @@ app.post("/api/update_nickname", async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+
+app.post("/api/update_limit", async (req, res) => {
+  const { id, limits } = req.body;
+  try {
+    await db
+      .promise()
+      .query("UPDATE users SET limits = ? WHERE id = ?", [limits, id]);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+app.get("/api/get_user_info", async (req, res) => {
+  const userId = req.query.id;
+
+  try {
+    const [rows] = await db
+      .promise()
+      .query("SELECT limits FROM users WHERE id = ?", [userId]);
+
+    if (rows.length > 0) {
+      res.json(rows[0]);
+    } else {
+      res.status(404).json({ message: "User not found" });
+    }
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
